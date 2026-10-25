@@ -118,6 +118,28 @@ npm start
 npx prisma studio
 ```
 
+### Deploying on cPanel without Terminal/SSH access
+Many shared-hosting cPanel plans only expose **File Manager** and **Setup Node.js App**, with no
+shell — so `npx prisma migrate deploy` can't be run by hand. Instead:
+
+1. In cPanel, use **Git Version Control** to clone this repo directly into the app's folder (it has
+   its own "Pull or Deploy" button, no shell needed), or upload the files via File Manager.
+2. In **Setup Node.js App**: create an application pointing at that folder, Node.js 20.x, startup
+   file `src/index.js`.
+3. Add environment variables (from the app's "Environment variables" section): `DATABASE_URL`
+   (`mysql://user:pass@localhost:3306/dbname` — same-account MySQL is reached via `localhost`, which
+   sidesteps any external Remote MySQL firewall restriction), `JWT_SECRET`, `CLIENT_ORIGIN`,
+   `SEED_DEMO_USERS=false`, and — **for the first boot only** — `RUN_MIGRATIONS_ON_BOOT=true` and
+   `RUN_SEED_ON_BOOT=true`.
+4. Click **Run NPM Install** in the UI (this also runs `prisma generate` via the `postinstall` script).
+5. Click **Restart**. On this boot, the app applies any pending Prisma migrations and runs
+   `prisma/seed.js` (see `src/index.js`) before it starts listening — both are safe to run more than
+   once, so a failed/retried restart won't corrupt anything.
+6. Once confirmed working (`GET /api/health` returns `{"status":"ok"}`), set
+   `RUN_MIGRATIONS_ON_BOOT`/`RUN_SEED_ON_BOOT` back to `false` and restart again — not required, but
+   avoids that extra startup work on every future restart.
+7. Change the demo account passwords, then leave `SEED_DEMO_USERS=false`.
+
 ### Docker
 ```bash
 docker build -t map-survey-server .
