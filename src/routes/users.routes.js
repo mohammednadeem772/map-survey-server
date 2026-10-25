@@ -41,4 +41,32 @@ router.post('/', authenticate, allow('ADMIN'), async (req, res) => {
   res.status(201).json({ id: user.id });
 });
 
+// DELETE /api/users/:id — admin only. This is a soft delete (active:false),
+// not a row removal: a user can be the surveyor on existing survey rows
+// (Survey.surveyor_id has no onDelete cascade/set-null), so hard-deleting
+// anyone with survey history would fail a foreign-key constraint. Setting
+// active:false keeps their history intact and blocks their login (see the
+// `!u.active` check in routes/auth.routes.js) without losing data.
+router.delete('/:id', authenticate, allow('ADMIN'), async (req, res) => {
+  const id = Number(req.params.id);
+
+  if (id === req.user.id) {
+    return res.status(400).json({ message: 'You cannot deactivate your own account' });
+  }
+
+  const result = await prisma.user.updateMany({ where: { id }, data: { active: false } });
+  if (result.count === 0) return res.status(404).json({ message: 'User not found' });
+
+  res.json({ deactivated: true });
+});
+
+// PUT /api/users/:id/reactivate — admin only. Undoes the soft delete above.
+router.put('/:id/reactivate', authenticate, allow('ADMIN'), async (req, res) => {
+  const id = Number(req.params.id);
+  const result = await prisma.user.updateMany({ where: { id }, data: { active: true } });
+  if (result.count === 0) return res.status(404).json({ message: 'User not found' });
+
+  res.json({ activated: true });
+});
+
 export default router;

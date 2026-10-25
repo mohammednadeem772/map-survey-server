@@ -53,6 +53,17 @@ server/
 
 This scoping happens inside the Prisma query itself (not filtered after the fact), so a supervisor or surveyor can never read rows outside their scope regardless of what they request.
 
+`DELETE /api/surveys/:id` uses a deliberately **stricter** scope than the one above: an admin can
+delete any survey, but a supervisor or surveyor can only delete one where `surveyor_id` is their
+own id — not merely one visible to them (a supervisor can view/verify every survey in their area,
+but not delete a colleague's). See `scopeWhere` usage vs. the inline check in that route.
+
+`DELETE /api/users/:id` is a **soft delete** (`active:false`), not a row removal — a user can be
+the surveyor on existing survey rows, and `Survey.surveyor_id` has no cascade/set-null, so hard-
+deleting someone with survey history would fail a foreign-key constraint. Deactivating keeps their
+history intact and blocks their login (`PUT /api/users/:id/reactivate` undoes it). An admin cannot
+deactivate their own account.
+
 ## API reference
 | Method | Path | Access | Description |
 |---|---|---|---|
@@ -63,10 +74,13 @@ This scoping happens inside the Prisma query itself (not filtered after the fact
 | POST | `/api/areas` | Admin | Create an area/ward |
 | GET | `/api/users` | Admin | List users with their area |
 | POST | `/api/users` | Admin | Create a user |
-| GET | `/api/surveys` | Authenticated | List surveys (role-scoped) |
+| DELETE | `/api/users/:id` | Admin | Deactivate a user (soft delete; blocks login) |
+| PUT | `/api/users/:id/reactivate` | Admin | Reactivate a deactivated user |
+| GET | `/api/surveys` | Authenticated | List surveys (role-scoped), incl. `surveyor_id`/`surveyor_email` |
 | GET | `/api/surveys/:id` | Authenticated | Survey detail + dependants (role-scoped) |
 | POST | `/api/surveys` | Authenticated | Create a survey + dependants (one Prisma nested write) |
 | PUT | `/api/surveys/:id` | Authenticated | Update a survey + replace dependants (role-scoped) |
+| DELETE | `/api/surveys/:id` | Authenticated | Delete a survey + dependants (admin: any; others: own only) |
 | GET | `/api/dashboard/summary` | Authenticated | KPIs + chart-ready aggregates (role-scoped) |
 | GET | `/api/dashboard/export.csv` | Admin, Supervisor | CSV export of surveys (role-scoped) |
 | GET | `/api/chart-configs` | Admin | List dashboard chart configuration |
