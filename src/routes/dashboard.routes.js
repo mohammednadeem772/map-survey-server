@@ -3,6 +3,7 @@
 import express from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authenticate, allow, scopeWhere } from '../middleware/auth.js';
+import { toCsv } from '../lib/csv.js';
 
 const router = express.Router();
 
@@ -79,14 +80,7 @@ router.get('/export.csv', authenticate, allow('ADMIN', 'SUPERVISOR'), async (req
     },
   });
 
-  const escapeCsvValue = (v) => `"${String(v ?? '').replaceAll('"', '""')}"`;
-  const header = rows.length ? Object.keys(rows[0]) : [];
-  const lines = [
-    header.join(','),
-    ...rows.map((row) => Object.values(row).map(escapeCsvValue).join(',')),
-  ];
-
-  res.type('text/csv').send(lines.join('\n'));
+  res.type('text/csv').send(toCsv(rows));
 });
 
 export default router;

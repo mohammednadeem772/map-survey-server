@@ -6,19 +6,25 @@ import { authenticate, allow } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// GET /api/users — list everyone with their area name attached.
+// GET /api/users — list everyone with their area name attached. Explicitly
+// selected (rather than returning every scalar) so password_hash and other
+// internal columns never leave the server.
 router.get('/', authenticate, allow('ADMIN'), async (req, res) => {
   const users = await prisma.user.findMany({
     orderBy: { name: 'asc' },
-    include: { area: { select: { name: true } } },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      active: true,
+      area: { select: { name: true } },
+    },
   });
 
-  // Flatten `area.name` to `area_name` and drop the password hash to match
-  // the client's expected shape (client/src/pages/Admin.jsx reads `x.area_name`).
-  const rows = users.map(({ area, password_hash, ...u }) => ({
-    ...u,
-    area_name: area?.name ?? null,
-  }));
+  // Flatten `area.name` to `area_name` to match the client's expected row
+  // shape (client/src/pages/Admin.jsx reads `x.area_name`).
+  const rows = users.map(({ area, ...u }) => ({ ...u, area_name: area?.name ?? null }));
 
   res.json(rows);
 });
