@@ -1,5 +1,7 @@
-// Entry point: load environment, optionally seed demo passwords, start listening.
+// Entry point: load environment, optionally run migrations/seed/demo
+// passwords, start listening.
 import 'dotenv/config';
+import { execSync } from 'node:child_process';
 import bcrypt from 'bcrypt';
 import { app } from './app.js';
 import { prisma } from './lib/prisma.js';
@@ -25,7 +27,34 @@ async function seedDemoUsersIfEnabled() {
   }
 }
 
+/**
+ * For hosts with no shell access (e.g. cPanel's Node.js App UI with no
+ * Terminal): set RUN_MIGRATIONS_ON_BOOT=true in the app's environment
+ * variables and restart the app to apply any pending Prisma migrations.
+ * `prisma migrate deploy` only applies migrations not yet recorded as run,
+ * so this is safe to leave on across restarts, though turning it back off
+ * once the database is up to date avoids the extra startup work.
+ */
+function runMigrationsIfEnabled() {
+  if (process.env.RUN_MIGRATIONS_ON_BOOT !== 'true') return;
+  console.log('Applying pending Prisma migrations...');
+  execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+}
+
+/**
+ * Same no-shell-access rationale as above: set RUN_SEED_ON_BOOT=true once to
+ * populate the demo areas/users/chart-configs (see prisma/seed.js — it uses
+ * upsert, so running it more than once is harmless), then turn it back off.
+ */
+function runSeedIfEnabled() {
+  if (process.env.RUN_SEED_ON_BOOT !== 'true') return;
+  console.log('Running the database seed...');
+  execSync('node prisma/seed.js', { stdio: 'inherit' });
+}
+
 async function start() {
+  runMigrationsIfEnabled();
+  runSeedIfEnabled();
   await seedDemoUsersIfEnabled();
 
   const port = process.env.PORT || 4000;
