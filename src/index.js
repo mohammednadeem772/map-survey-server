@@ -1,33 +1,38 @@
-// Main REST API. Routes are grouped here to keep this starter kit easy to inspect.
+// Entry point: load environment, optionally seed demo passwords, start listening.
 import 'dotenv/config';
-import express from 'express'; import cors from 'cors'; import helmet from 'helmet'; import bcrypt from 'bcrypt'; import jwt from 'jsonwebtoken';
-import {db} from './db.js'; import {authenticate,allow,scopeSql} from './auth.js';
-const app=express(); app.use(helmet()); app.use(cors({origin:process.env.CLIENT_ORIGIN?.split(',')})); app.use(express.json({limit:'2mb'}));
-app.get('/api/health',async(req,res)=>{await db.query('SELECT 1');res.json({status:'ok'});});
-app.post('/api/auth/login',async(req,res)=>{const {email,password}=req.body;const [[u]]=await db.query('SELECT id,name,email,password_hash,role,area_id,active FROM users WHERE email=?',[email]);if(!u||!u.active||!(await bcrypt.compare(password,u.password_hash)))return res.status(401).json({message:'Invalid credentials'});const user={id:u.id,name:u.name,email:u.email,role:u.role,areaId:u.area_id};res.json({token:jwt.sign(user,process.env.JWT_SECRET,{expiresIn:'8h'}),user});});
-app.get('/api/auth/me',authenticate,(req,res)=>res.json(req.user));
-app.get('/api/areas',authenticate,async(req,res)=>{let sql='SELECT * FROM areas WHERE active=1',p=[];if(req.user.role!=='ADMIN'){sql+=' AND id=?';p.push(req.user.areaId)}const [rows]=await db.query(sql,p);res.json(rows);});
-app.post('/api/areas',authenticate,allow('ADMIN'),async(req,res)=>{const {name,ward_code,target_households=0}=req.body;const [r]=await db.query('INSERT INTO areas(name,ward_code,target_households) VALUES(?,?,?)',[name,ward_code,target_households]);res.status(201).json({id:r.insertId});});
-app.get('/api/users',authenticate,allow('ADMIN'),async(req,res)=>{const [r]=await db.query('SELECT u.id,u.name,u.email,u.role,u.active,a.name area_name FROM users u LEFT JOIN areas a ON a.id=u.area_id ORDER BY u.name');res.json(r);});
-app.post('/api/users',authenticate,allow('ADMIN'),async(req,res)=>{const {name,email,password,role,area_id}=req.body;const hash=await bcrypt.hash(password,10);const [r]=await db.query('INSERT INTO users(name,email,password_hash,role,area_id) VALUES(?,?,?,?,?)',[name,email,hash,role,area_id||null]);res.status(201).json({id:r.insertId});});
-app.get('/api/surveys',authenticate,async(req,res)=>{const sc=scopeSql(req.user);const [r]=await db.query(`SELECT s.id,s.survey_code,s.head_name,s.phone,s.status,s.surveyed_at,a.name area_name,u.name surveyor_name FROM surveys s JOIN areas a ON a.id=s.area_id JOIN users u ON u.id=s.surveyor_id WHERE 1=1 ${sc.sql} ORDER BY s.updated_at DESC`,sc.params);res.json(r);});
-app.get('/api/surveys/:id',authenticate,async(req,res)=>{const sc=scopeSql(req.user);const [[s]]=await db.query(`SELECT * FROM surveys s WHERE s.id=? ${sc.sql}`,[req.params.id,...sc.params]);if(!s)return res.status(404).json({message:'Survey not found'});const [dependants]=await db.query('SELECT * FROM dependants WHERE survey_id=?',[s.id]);res.json({...s,dependants});});
-const surveyFields=['area_id','status','consent_given','head_name','head_age','head_gender','head_marital_status','head_education','head_occupation','head_skill','head_namaz','head_income','address','phone','latitude','longitude','spouse_name','spouse_age','spouse_education','spouse_occupation','spouse_skill','spouse_namaz','spouse_income','house_tenure','house_condition','rooms','toilet_access','drinking_water','electricity_access','loan_types','loan_amount','govt_scheme_availed','govt_scheme_names','govt_scheme_amount','bedridden','bedridden_monthly_expense','ration_card','aadhaar_status','health_card','bank_account','voter_id_status','vehicles','fridge','television','tv_connection','tv_type','washing_machine','smartphone_access','internet_access','monthly_household_income','monthly_household_expense','food_security','vulnerable_category','notes'];
-function normalise(v){return ['loan_types','vehicles','vulnerable_category'].includes(v[0])?JSON.stringify(v[1]||[]):v[1]??null;}
-app.post('/api/surveys',authenticate,async(req,res)=>{const conn=await db.getConnection();try{await conn.beginTransaction();const body=req.body;if(req.user.role!=='ADMIN')body.area_id=req.user.areaId;const code=`MAP-${Date.now().toString(36).toUpperCase()}`;const pairs=surveyFields.map(k=>[k,body[k]]).filter(([,v])=>v!==undefined);const cols=['survey_code','surveyor_id',...pairs.map(x=>x[0])], vals=[code,req.user.id,...pairs.map(normalise)];const [r]=await conn.query(`INSERT INTO surveys(${cols.join(',')}) VALUES(${cols.map(()=>'?').join(',')})`,vals);for(const d of body.dependants||[])await conn.query('INSERT INTO dependants(survey_id,name,age,relationship,gender,member_type,education,institution,part_time_job,scholarship_availed,occupation,skill,namaz,income,disability_or_health_need) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[r.insertId,d.name,d.age||null,d.relationship||null,d.gender||null,d.member_type||'DEPENDANT',d.education||null,d.institution||null,!!d.part_time_job,d.scholarship_availed||null,d.occupation||null,d.skill||null,d.namaz||null,d.income||0,d.disability_or_health_need||null]);await conn.commit();res.status(201).json({id:r.insertId,survey_code:code});}catch(e){await conn.rollback();throw e;}finally{conn.release();}});
-app.put('/api/surveys/:id',authenticate,async(req,res)=>{const sc=scopeSql(req.user);const [[existing]]=await db.query(`SELECT id FROM surveys s WHERE s.id=? ${sc.sql}`,[req.params.id,...sc.params]);if(!existing)return res.status(404).json({message:'Survey not found'});const pairs=surveyFields.map(k=>[k,req.body[k]]).filter(([,v])=>v!==undefined);if(pairs.length)await db.query(`UPDATE surveys SET ${pairs.map(([k])=>`${k}=?`).join(',')} WHERE id=?`,[...pairs.map(normalise),req.params.id]);if(req.body.dependants){await db.query('DELETE FROM dependants WHERE survey_id=?',[req.params.id]);for(const d of req.body.dependants)await db.query('INSERT INTO dependants(survey_id,name,age,relationship,gender,member_type,education,institution,part_time_job,scholarship_availed,occupation,skill,namaz,income,disability_or_health_need) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[req.params.id,d.name,d.age||null,d.relationship||null,d.gender||null,d.member_type||'DEPENDANT',d.education||null,d.institution||null,!!d.part_time_job,d.scholarship_availed||null,d.occupation||null,d.skill||null,d.namaz||null,d.income||0,d.disability_or_health_need||null]);}res.json({updated:true});});
-app.get('/api/dashboard/summary',authenticate,async(req,res)=>{const sc=scopeSql(req.user);const [k]=await db.query(`SELECT COUNT(*) surveyed,SUM(status='VERIFIED') verified,ROUND(AVG(monthly_household_income),0) avg_income,SUM(bedridden=1) bedridden,SUM(loan_amount>0) indebted FROM surveys s WHERE 1=1 ${sc.sql}`,sc.params);const [areas]=await db.query(`SELECT a.name,COUNT(s.id) surveyed,a.target_households FROM areas a LEFT JOIN surveys s ON s.area_id=a.id WHERE 1=1 ${sc.sql.replaceAll('s.','s.')} GROUP BY a.id`,sc.params);const [tenure]=await db.query(`SELECT COALESCE(house_tenure,'Not recorded') name,COUNT(*) value FROM surveys s WHERE 1=1 ${sc.sql} GROUP BY house_tenure`,sc.params);const [condition]=await db.query(`SELECT COALESCE(house_condition,'Not recorded') name,COUNT(*) value FROM surveys s WHERE 1=1 ${sc.sql} GROUP BY house_condition`,sc.params);const [surveyor]=await db.query(`SELECT u.name,COUNT(*) value FROM surveys s JOIN users u ON u.id=s.surveyor_id WHERE 1=1 ${sc.sql} GROUP BY u.id`,sc.params);res.json({kpis:k[0],areas,tenure,condition,surveyor});});
-app.get('/api/dashboard/export.csv',authenticate,allow('ADMIN','SUPERVISOR'),async(req,res)=>{const sc=scopeSql(req.user);const [r]=await db.query(`SELECT survey_code,head_name,phone,status,surveyed_at,monthly_household_income,loan_amount FROM surveys s WHERE 1=1 ${sc.sql}`,sc.params);const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';res.type('text/csv').send([Object.keys(r[0]||{}).join(','),...r.map(x=>Object.values(x).map(esc).join(','))].join('\n'));});
-app.get('/api/chart-configs',authenticate,allow('ADMIN'),async(req,res)=>{const [r]=await db.query('SELECT * FROM chart_configs ORDER BY display_order');res.json(r);});
-app.post('/api/chart-configs',authenticate,allow('ADMIN'),async(req,res)=>{const {title,metric_key,chart_type,enabled=true,display_order=0}=req.body;const [r]=await db.query('INSERT INTO chart_configs(title,metric_key,chart_type,enabled,display_order) VALUES(?,?,?,?,?)',[title,metric_key,chart_type,enabled,display_order]);res.status(201).json({id:r.insertId});});
-app.use((err,req,res,next)=>{console.error(err);res.status(500).json({message:'Unexpected server error'});});
-async function start(){
-  // For this starter kit only, initialise the documented demo passwords when explicitly enabled.
-  if(process.env.SEED_DEMO_USERS==='true'){
-    for(const [email,password] of [['admin@map.local','Admin@123'],['supervisor@map.local','Supervisor@123'],['surveyor@map.local','Surveyor@123']]){
-      await db.query('UPDATE users SET password_hash=? WHERE email=?',[await bcrypt.hash(password,10),email]);
-    }
+import bcrypt from 'bcrypt';
+import { app } from './app.js';
+import { prisma } from './lib/prisma.js';
+
+const DEMO_ACCOUNTS = [
+  ['admin@map.local', 'Admin@123'],
+  ['supervisor@map.local', 'Supervisor@123'],
+  ['surveyor@map.local', 'Surveyor@123'],
+];
+
+/**
+ * For local/demo environments only: resets the three documented demo
+ * accounts' passwords on every startup. Set SEED_DEMO_USERS=false (the
+ * production default) once real passwords have been chosen, otherwise
+ * they get reset back to the defaults on the next restart.
+ */
+async function seedDemoUsersIfEnabled() {
+  if (process.env.SEED_DEMO_USERS !== 'true') return;
+
+  for (const [email, password] of DEMO_ACCOUNTS) {
+    const password_hash = await bcrypt.hash(password, 10);
+    await prisma.user.updateMany({ where: { email }, data: { password_hash } });
   }
-  app.listen(process.env.PORT||4000,()=>console.log(`MAP API listening on ${process.env.PORT||4000}`));
 }
-start().catch(e=>{console.error(e);process.exit(1)});
+
+async function start() {
+  await seedDemoUsersIfEnabled();
+
+  const port = process.env.PORT || 4000;
+  app.listen(port, () => console.log(`MAP API listening on ${port}`));
+}
+
+start().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

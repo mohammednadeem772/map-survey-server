@@ -5,8 +5,8 @@ Express REST API for the **MAP Socio-Economic Survey Application**, built for th
 Provides authentication, role-scoped survey CRUD, dashboard aggregates, and admin management (areas, users, chart configs) over a MySQL database. Pairs with the [map-survey-client](https://github.com/mohammednadeem772/map-survey-client) frontend, but is a standalone HTTP API that can be consumed by any client.
 
 ## Tech stack
-- Node.js 20 + Express
-- MySQL 8 (via `mysql2/promise`, connection pool, parameterized queries throughout)
+- Node.js 20 + Express (ESM — `"type": "module"`)
+- MySQL 8, accessed through **Prisma** (`@prisma/client`) — no raw SQL in application code
 - JWT (`jsonwebtoken`) for stateless auth
 - `bcrypt` for password hashing
 - `helmet` + `cors` for baseline HTTP hardening
@@ -15,29 +15,48 @@ Provides authentication, role-scoped survey CRUD, dashboard aggregates, and admi
 ## Project structure
 ```text
 server/
+  prisma/
+    schema.prisma     Source of truth for the DB schema (see note below)
+    migrations/        Created by `prisma migrate dev` — not committed until it exists
   src/
-    index.js      App entry point — all routes are defined here (see API reference below)
-    auth.js       JWT verification middleware, role guard (allow), row-level scopeSql helper
-    db.js         Shared MySQL connection pool
-  Dockerfile      Node 20 Alpine image, npm ci (prod deps only), runs `npm start`
+    index.js           Entry point — loads env, optional demo-user seed, starts the HTTP server
+    app.js              Express app: middleware, route mounting, error handler
+    lib/
+      prisma.js          Shared PrismaClient singleton
+    middleware/
+      auth.js            JWT verification (`authenticate`), role guard (`allow`),
+                          row-scope helper (`scopeWhere`)
+    routes/
+      auth.routes.js      POST /login, GET /me
+      areas.routes.js      GET/POST /areas
+      users.routes.js      GET/POST /users
+      surveys.routes.js    GET/POST/PUT /surveys (the core CRUD + transactional writes)
+      dashboard.routes.js  GET /dashboard/summary, GET /dashboard/export.csv
+      chartConfigs.routes.js  GET/POST /chart-configs
+  Dockerfile           Node 20 Alpine image — installs deps, runs `prisma generate`, `npm start`
   .env.example
 ```
 
+### Why Prisma field names are snake_case
+`prisma/schema.prisma` deliberately uses the existing MySQL column names (`head_name`, `area_id`, `survey_code`, ...) as the Prisma field names, instead of the usual Prisma camelCase convention. The API's JSON contract was already snake_case before this migration, and the React client reads those exact keys — keeping the schema's field names identical to the JSON keys means Prisma Client's results can be sent straight to `res.json()` with no translation layer (except for the two relation lookups — `area_name` / `surveyor_name` / `area.name` on users — which are flattened in the route handlers).
+
+`database/01-schema.sql` is kept for historical reference; `prisma/schema.prisma` is the schema source of truth going forward. Create/apply migrations with `npx prisma migrate dev` (local) or `npx prisma migrate deploy` (staging/production), not by hand-editing SQL.
+
 ## Authentication & authorization model
 - `POST /api/auth/login` verifies the password with bcrypt and returns a JWT (8h expiry) containing `{ id, name, email, role, areaId }`.
-- `authenticate` middleware (`auth.js`) verifies the bearer token and attaches `req.user`.
+- `authenticate` middleware (`src/middleware/auth.js`) verifies the bearer token and attaches `req.user`.
 - `allow(...roles)` middleware restricts a route to specific roles (e.g. `allow('ADMIN')`).
-- `scopeSql(user)` returns an extra `WHERE` clause + params so list/detail queries are automatically scoped:
+- `scopeWhere(user)` returns a Prisma `where` fragment so list/detail survey queries are automatically scoped:
   - `ADMIN` — sees everything.
   - `SUPERVISOR` — limited to their assigned `area_id`.
   - `SURVEYOR` — limited to surveys where they are `surveyor_id`.
 
-This row-scoping is applied inside the SQL itself (not filtered after the fact), so a supervisor or surveyor can never read rows outside their scope regardless of what they request.
+This scoping happens inside the Prisma query itself (not filtered after the fact), so a supervisor or surveyor can never read rows outside their scope regardless of what they request.
 
 ## API reference
 | Method | Path | Access | Description |
 |---|---|---|---|
-| GET | `/api/health` | Public | DB connectivity check |
+| GET | `/api/health` | Public | DB connectivity check (`SELECT 1` via Prisma) |
 | POST | `/api/auth/login` | Public | Returns `{ token, user }` |
 | GET | `/api/auth/me` | Authenticated | Returns the decoded JWT user |
 | GET | `/api/areas` | Authenticated | List active areas (scoped for non-admins) |
@@ -46,47 +65,40 @@ This row-scoping is applied inside the SQL itself (not filtered after the fact),
 | POST | `/api/users` | Admin | Create a user |
 | GET | `/api/surveys` | Authenticated | List surveys (role-scoped) |
 | GET | `/api/surveys/:id` | Authenticated | Survey detail + dependants (role-scoped) |
-| POST | `/api/surveys` | Authenticated | Create a survey + dependants (transactional) |
+| POST | `/api/surveys` | Authenticated | Create a survey + dependants (one Prisma nested write) |
 | PUT | `/api/surveys/:id` | Authenticated | Update a survey + replace dependants (role-scoped) |
 | GET | `/api/dashboard/summary` | Authenticated | KPIs + chart-ready aggregates (role-scoped) |
 | GET | `/api/dashboard/export.csv` | Admin, Supervisor | CSV export of surveys (role-scoped) |
 | GET | `/api/chart-configs` | Admin | List dashboard chart configuration |
 | POST | `/api/chart-configs` | Admin | Create a chart configuration entry |
 
-Survey writes run inside a MySQL transaction: the survey row and its `dependants` rows are inserted/replaced together, with rollback on any failure.
+Survey creates/updates use Prisma's nested writes (`dependants: { create / deleteMany }`), which Prisma executes atomically — the survey row and its dependant rows are written or rolled back together.
 
 ## Getting started
 
 ### Prerequisites
 - Node.js 20+
-- MySQL 8.0+
-- The schema/seed scripts from the parent project's `database/` folder (`01-schema.sql`, `02-seed.sql`)
-
-### Database setup
-```sql
-CREATE DATABASE map_survey CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'map_user'@'%' IDENTIFIED BY 'replace-strong-password';
-GRANT ALL PRIVILEGES ON map_survey.* TO 'map_user'@'%';
-FLUSH PRIVILEGES;
-```
-```bash
-mysql -u map_user -p map_survey < path/to/database/01-schema.sql
-mysql -u map_user -p map_survey < path/to/database/02-seed.sql
-```
+- MySQL 8.0+ (local, or a cPanel-hosted MySQL database — see note below)
 
 ### Configure environment
 ```bash
 npm install
 cp .env.example .env
 ```
+Set `DATABASE_URL` in `.env` (Prisma's connection string format):
+```
+DATABASE_URL="mysql://map_user:MapPassword123!@localhost:3306/map_survey"
+```
+For a cPanel-hosted database, the user/db names are usually prefixed with your cPanel account name
+(e.g. `cpaneluser_dbuser` / `cpaneluser_map_survey`), and **Remote MySQL** must be enabled for the
+connecting host/IP under cPanel → Remote MySQL, or the connection will be refused regardless of a
+correct connection string.
 
-| Variable | Purpose |
-|---|---|
-| `PORT` | API port (default `4000`) |
-| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | MySQL connection |
-| `JWT_SECRET` | Signing secret for auth tokens — **must** be a long random value in any non-local environment |
-| `CLIENT_ORIGIN` | Comma-separated list of allowed CORS origins |
-| `SEED_DEMO_USERS` | When `true`, resets the three demo accounts' passwords to the documented defaults on every startup. Set to `false` after first deploy, otherwise password changes get reset on restart. |
+### Apply the schema
+```bash
+npx prisma migrate dev --name init   # first run: creates prisma/migrations + the tables
+npx prisma generate                  # regenerates the client after any schema change (also runs on `npm install` via postinstall)
+```
 
 ### Run in development
 ```bash
@@ -97,7 +109,13 @@ Uses `node --watch` for auto-restart on file changes. Default port `4000`; healt
 ### Run in production
 ```bash
 npm ci --omit=dev
+npx prisma migrate deploy
 npm start
+```
+
+### Inspect data
+```bash
+npx prisma studio
 ```
 
 ### Docker
@@ -118,11 +136,17 @@ With `SEED_DEMO_USERS=true`:
 Change these immediately in any non-local deployment, then set `SEED_DEMO_USERS=false`.
 
 ## Security notes for contributors
-- All SQL uses parameterized queries (`?` placeholders) — never interpolate user input into a query string.
-- Never add an endpoint that reads/writes `surveys` or `dependants` without going through `scopeSql(req.user)`; this is what enforces row-level access control.
+- All DB access goes through Prisma Client — never add a raw SQL string or a second ORM.
+- Never add an endpoint that reads/writes `surveys` or `dependants` without going through
+  `scopeWhere(req.user)`; this is what enforces row-level access control.
 - Don't log request bodies, passwords, or tokens.
 - This API handles sensitive household and socio-economic data. Before any non-local deployment, review the security/privacy checklist in the parent project (HTTPS, managed MySQL, encrypted backups, audit logging, and compliance with India's Digital Personal Data Protection Act, 2023).
 
 ## Development notes / known gaps
-- `zod` is a declared dependency but request bodies in `src/index.js` are not yet validated against schemas — contributions adding `zod` validation on the write endpoints (`/api/surveys`, `/api/users`, `/api/areas`, `/api/chart-configs`) are welcome.
-- There are no automated tests yet; please add coverage for new endpoints or auth-scoping changes alongside the code.
+- `zod` is a declared dependency but request bodies are not yet validated against schemas —
+  contributions adding `zod` validation on the write endpoints (`/api/surveys`, `/api/users`,
+  `/api/areas`, `/api/chart-configs`) are welcome.
+- There are no automated tests yet; please add coverage for new endpoints or auth-scoping changes
+  alongside the code.
+- `prisma/migrations/` doesn't exist until the first `prisma migrate dev` is run against a real
+  database — that's expected to happen as part of environment setup, not something to fake locally.
