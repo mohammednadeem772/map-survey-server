@@ -3,24 +3,44 @@
 import 'dotenv/config';
 import { execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+// Resolved from this file's own location on disk, not from process.cwd() —
+// on this app's cPanel host, the working directory Passenger/the Node.js
+// Selector actually starts the process with doesn't reliably match the
+// application root (the same quirk that makes cPanel's "Run NPM Install"
+// button run the postinstall hook from the wrong folder). Every prisma CLI
+// call below passes an explicit `cwd` and `--schema` computed from here, so
+// none of them depend on an inherited working directory being correct.
+const SERVER_ROOT = dirname(dirname(fileURLToPath(import.meta.url))); // .../src/.. = the server/ folder
+const SCHEMA_PATH = join(SERVER_ROOT, 'prisma', 'schema.prisma');
+
+function runPrismaCommand(args) {
+  execSync(`npx prisma ${args} --schema="${SCHEMA_PATH}"`, { stdio: 'inherit', cwd: SERVER_ROOT });
+}
 
 // The Prisma Client's generated code must exist before any module does
 // `import { PrismaClient } from '@prisma/client'` and instantiates it — see
-// lib/prisma.js, which does that at module-load time. On some hosts (e.g.
-// cPanel's "Run NPM Install" button) the `postinstall: prisma generate` hook
-// in package.json runs with the wrong working directory and silently fails
-// to produce it, even though the rest of `npm install` succeeds. So: check
-// for it here and generate it ourselves if missing, before importing
-// anything that depends on it.
+// lib/prisma.js, which does that at module-load time. On some hosts the
+// `postinstall: prisma generate` hook in package.json silently fails to
+// produce it (see SERVER_ROOT comment above), even though the rest of
+// `npm install` succeeds. So: check for it here and generate it ourselves
+// if missing, before importing anything that depends on it.
 //
 // This has to happen via a dynamic `import()` below rather than the usual
 // static `import ... from` at the top of the file — static ESM imports are
 // all resolved before any other code in a module runs, which would run this
 // check too late to matter.
-const prismaClientDir = new URL('../node_modules/.prisma/client', import.meta.url);
+const prismaClientDir = join(SERVER_ROOT, 'node_modules', '.prisma', 'client');
 if (!existsSync(prismaClientDir)) {
   console.log('Prisma Client not found — generating it now...');
-  execSync('npx prisma generate', { stdio: 'inherit' });
+  try {
+    runPrismaCommand('generate');
+  } catch (err) {
+    console.error('Failed to generate Prisma Client:', err.message);
+    process.exit(1);
+  }
 }
 
 const { app } = await import('./app.js');
@@ -59,7 +79,7 @@ async function seedDemoUsersIfEnabled() {
 function runMigrationsIfEnabled() {
   if (process.env.RUN_MIGRATIONS_ON_BOOT !== 'true') return;
   console.log('Applying pending Prisma migrations...');
-  execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+  runPrismaCommand('migrate deploy');
 }
 
 /**
@@ -70,7 +90,7 @@ function runMigrationsIfEnabled() {
 function runSeedIfEnabled() {
   if (process.env.RUN_SEED_ON_BOOT !== 'true') return;
   console.log('Running the database seed...');
-  execSync('node prisma/seed.js', { stdio: 'inherit' });
+  execSync('node prisma/seed.js', { stdio: 'inherit', cwd: SERVER_ROOT });
 }
 
 async function start() {
