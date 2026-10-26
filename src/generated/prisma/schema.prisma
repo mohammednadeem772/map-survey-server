@@ -1,0 +1,225 @@
+// Prisma schema for the MAP Survey API.
+//
+// Field names intentionally match the existing MySQL column names (snake_case)
+// instead of the usual Prisma camelCase convention. The REST API has shipped a
+// snake_case JSON contract (head_name, survey_code, area_id, ...) since before
+// this ORM migration, and the React client already depends on those exact keys.
+// Keeping Prisma field names identical to the column names means Prisma Client
+// objects can be returned to the client with no translation layer in between.
+//
+// This file is the source of truth for the schema going forward. The original
+// hand-written SQL in database/01-schema.sql is kept for reference only — use
+// `npx prisma migrate dev` (local/dev) or `npx prisma migrate deploy` (cPanel/
+// production) to create and apply migrations from this schema instead.
+
+// Generated into a tracked source folder (not node_modules) and committed to
+// git — see src/generated/prisma/README-DEPLOY.md for why: the cPanel host
+// this deploys to can't reliably run `prisma generate` itself (its outbound
+// network access is too restricted/slow to fetch the query-engine binary),
+// so the generated client — binary included — ships in the repo instead and
+// the server never needs to generate anything at deploy time.
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Lookup / access-control tables ──────────────────────────────────────────
+
+/// A mohalla / ward. Surveys and users (supervisors, surveyors) belong to one.
+model Area {
+  id                Int      @id @default(autoincrement())
+  name              String   @db.VarChar(120)
+  ward_code         String   @unique @db.VarChar(50)
+  target_households Int      @default(0)
+  active            Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @default(now()) @updatedAt
+
+  users   User[]
+  surveys Survey[]
+
+  @@map("areas")
+}
+
+enum Role {
+  ADMIN
+  SUPERVISOR
+  SURVEYOR
+}
+
+/// Admins see everything, supervisors are scoped to their area, surveyors to
+/// their own records — see src/middleware/auth.js `scopeWhere()`.
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String   @db.VarChar(120)
+  email         String   @unique @db.VarChar(180)
+  password_hash String   @db.VarChar(255)
+  role          Role
+  area_id       Int?
+  active        Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now()) @updatedAt
+
+  area          Area?    @relation(fields: [area_id], references: [id])
+  surveys_taken Survey[] @relation("SurveySurveyor")
+
+  @@map("users")
+}
+
+// ── Survey data ──────────────────────────────────────────────────────────
+
+enum SurveyStatus {
+  DRAFT
+  SUBMITTED
+  VERIFIED
+  RETURNED
+}
+
+/// One household survey. Written together with its Dependant rows inside a
+/// single Prisma transaction — see src/routes/surveys.routes.js.
+model Survey {
+  id          Int    @id @default(autoincrement())
+  survey_code String @unique @db.VarChar(40)
+  area_id     Int
+  surveyor_id Int
+
+  status        SurveyStatus @default(DRAFT)
+  consent_given Boolean      @default(false)
+
+  // Household head
+  head_name           String  @db.VarChar(120)
+  head_age            Int?
+  head_gender         String? @db.VarChar(30)
+  head_marital_status String? @db.VarChar(30)
+  head_education      String? @db.VarChar(80)
+  head_occupation     String? @db.VarChar(100)
+  head_skill          String? @db.VarChar(150)
+  head_namaz          String? @db.VarChar(30)
+  head_income         Decimal @default(0) @db.Decimal(12, 2)
+
+  address   String   @db.Text
+  phone     String?  @db.VarChar(30)
+  latitude  Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+
+  // Spouse
+  spouse_name       String? @db.VarChar(120)
+  spouse_age        Int?
+  spouse_education  String? @db.VarChar(80)
+  spouse_occupation String? @db.VarChar(100)
+  spouse_skill      String? @db.VarChar(150)
+  spouse_namaz      String? @db.VarChar(30)
+  spouse_income     Decimal @default(0) @db.Decimal(12, 2)
+
+  // Housing
+  house_tenure       String? @db.VarChar(40)
+  house_condition    String? @db.VarChar(50)
+  rooms              Int?
+  toilet_access      String? @db.VarChar(40)
+  drinking_water     String? @db.VarChar(50)
+  electricity_access String? @db.VarChar(30)
+
+  // Debt / government schemes / health burden
+  loan_types                Json?
+  loan_amount               Decimal @default(0) @db.Decimal(12, 2)
+  govt_scheme_availed       Boolean @default(false)
+  govt_scheme_names         String? @db.Text
+  govt_scheme_amount        Decimal @default(0) @db.Decimal(12, 2)
+  bedridden                 Boolean @default(false)
+  bedridden_monthly_expense Decimal @default(0) @db.Decimal(12, 2)
+
+  // Documentation
+  ration_card     Boolean @default(false)
+  aadhaar_status  String? @db.VarChar(30)
+  health_card     Boolean @default(false)
+  bank_account    Boolean @default(false)
+  voter_id_status String? @db.VarChar(40)
+
+  // Assets / digital access
+  vehicles          Json?
+  fridge            Boolean @default(false)
+  television        Boolean @default(false)
+  tv_connection     String? @db.VarChar(30)
+  tv_type           String? @db.VarChar(30)
+  washing_machine   Boolean @default(false)
+  smartphone_access String? @db.VarChar(50)
+  internet_access   String? @db.VarChar(30)
+
+  // Household economy / vulnerability
+  monthly_household_income  Decimal @default(0) @db.Decimal(12, 2)
+  monthly_household_expense Decimal @default(0) @db.Decimal(12, 2)
+  food_security             String? @db.VarChar(40)
+  vulnerable_category       Json?
+
+  notes       String?  @db.Text
+  surveyed_at DateTime @default(now())
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  area       Area        @relation(fields: [area_id], references: [id])
+  surveyor   User        @relation("SurveySurveyor", fields: [surveyor_id], references: [id])
+  dependants Dependant[]
+
+  @@index([area_id])
+  @@index([surveyor_id])
+  @@index([status])
+  @@map("surveys")
+}
+
+enum MemberType {
+  STUDENT
+  WORKING
+  DEPENDANT
+}
+
+/// A household member other than the head/spouse, captured alongside a survey.
+model Dependant {
+  id                        Int        @id @default(autoincrement())
+  survey_id                 Int
+  name                      String     @db.VarChar(120)
+  age                       Int?
+  relationship              String?    @db.VarChar(40)
+  gender                    String?    @db.VarChar(30)
+  member_type               MemberType
+  education                 String?    @db.VarChar(100)
+  institution               String?    @db.VarChar(150)
+  part_time_job             Boolean    @default(false)
+  scholarship_availed       String?    @db.VarChar(150)
+  occupation                String?    @db.VarChar(100)
+  skill                     String?    @db.VarChar(150)
+  namaz                     String?    @db.VarChar(30)
+  income                    Decimal    @default(0) @db.Decimal(12, 2)
+  disability_or_health_need String?    @db.VarChar(200)
+  created_at                DateTime   @default(now())
+
+  survey Survey @relation(fields: [survey_id], references: [id], onDelete: Cascade)
+
+  @@map("dependants")
+}
+
+// ── Dashboard administration ────────────────────────────────────────────
+
+enum ChartType {
+  bar
+  pie
+  line
+}
+
+/// Admin-configurable list of charts shown on the dashboard.
+model ChartConfig {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(120)
+  metric_key    String    @db.VarChar(80)
+  chart_type    ChartType @default(bar)
+  enabled       Boolean   @default(true)
+  display_order Int       @default(0)
+  created_at    DateTime  @default(now())
+
+  @@map("chart_configs")
+}

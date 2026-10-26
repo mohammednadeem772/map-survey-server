@@ -12,8 +12,16 @@
 // `npx prisma migrate dev` (local/dev) or `npx prisma migrate deploy` (cPanel/
 // production) to create and apply migrations from this schema instead.
 
+// Generated into a tracked source folder (not node_modules) and committed to
+// git — see src/generated/prisma/README-DEPLOY.md for why: the cPanel host
+// this deploys to can't reliably run `prisma generate` itself (its outbound
+// network access is too restricted/slow to fetch the query-engine binary),
+// so the generated client — binary included — ships in the repo instead and
+// the server never needs to generate anything at deploy time.
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {

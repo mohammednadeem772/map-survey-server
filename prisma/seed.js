@@ -2,7 +2,7 @@
 // one user per role, and the default dashboard chart configuration.
 // Run with `npx prisma db seed` (or automatically after `prisma migrate dev`
 // / `migrate reset`, since it's registered under "prisma.seed" in package.json).
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../src/generated/prisma/index.js';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();

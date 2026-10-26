@@ -1,51 +1,22 @@
-// Entry point: load environment, ensure the Prisma Client is generated,
-// then optionally run migrations/seed/demo passwords, and start listening.
+// Entry point: load environment, optionally run migrations/seed/demo
+// passwords, start listening.
 import 'dotenv/config';
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { app } from './app.js';
+import { prisma } from './lib/prisma.js';
+import bcrypt from 'bcrypt';
 
 // Resolved from this file's own location on disk, not from process.cwd() —
-// on this app's cPanel host, the working directory Passenger/the Node.js
-// Selector actually starts the process with doesn't reliably match the
-// application root (the same quirk that makes cPanel's "Run NPM Install"
-// button run the postinstall hook from the wrong folder). Every prisma CLI
-// call below passes an explicit `cwd` and `--schema` computed from here, so
-// none of them depend on an inherited working directory being correct.
+// on this app's cPanel host, the working directory the Node.js Selector
+// actually starts the process with doesn't reliably match the application
+// root (the same quirk that makes cPanel's "Run NPM Install" button run the
+// postinstall hook from the wrong folder). Anything below that shells out to
+// the Prisma CLI passes an explicit `cwd`/`--schema` computed from here
+// rather than trusting an inherited working directory.
 const SERVER_ROOT = dirname(dirname(fileURLToPath(import.meta.url))); // .../src/.. = the server/ folder
 const SCHEMA_PATH = join(SERVER_ROOT, 'prisma', 'schema.prisma');
-
-function runPrismaCommand(args) {
-  execSync(`npx prisma ${args} --schema="${SCHEMA_PATH}"`, { stdio: 'inherit', cwd: SERVER_ROOT });
-}
-
-// The Prisma Client's generated code must exist before any module does
-// `import { PrismaClient } from '@prisma/client'` and instantiates it — see
-// lib/prisma.js, which does that at module-load time. On some hosts the
-// `postinstall: prisma generate` hook in package.json silently fails to
-// produce it (see SERVER_ROOT comment above), even though the rest of
-// `npm install` succeeds. So: check for it here and generate it ourselves
-// if missing, before importing anything that depends on it.
-//
-// This has to happen via a dynamic `import()` below rather than the usual
-// static `import ... from` at the top of the file — static ESM imports are
-// all resolved before any other code in a module runs, which would run this
-// check too late to matter.
-const prismaClientDir = join(SERVER_ROOT, 'node_modules', '.prisma', 'client');
-if (!existsSync(prismaClientDir)) {
-  console.log('Prisma Client not found — generating it now...');
-  try {
-    runPrismaCommand('generate');
-  } catch (err) {
-    console.error('Failed to generate Prisma Client:', err.message);
-    process.exit(1);
-  }
-}
-
-const { app } = await import('./app.js');
-const { prisma } = await import('./lib/prisma.js');
-const { default: bcrypt } = await import('bcrypt');
 
 const DEMO_ACCOUNTS = [
   ['admin@map.local', 'Admin@123'],
@@ -75,17 +46,29 @@ async function seedDemoUsersIfEnabled() {
  * `prisma migrate deploy` only applies migrations not yet recorded as run,
  * so this is safe to leave on across restarts, though turning it back off
  * once the database is up to date avoids the extra startup work.
+ *
+ * Unlike `prisma generate` (query engine, bundled — see
+ * prisma/schema.prisma), `migrate deploy` needs a separate engine binary
+ * that isn't pre-bundled here. On a host with restricted/slow outbound
+ * network access this can hang the same way `generate` used to. If so,
+ * don't rely on this — instead run the migration SQL (inside the
+ * prisma/migrations folder) directly via phpMyAdmin (or any MySQL client)
+ * once; the running app only needs the tables to exist, it never reads
+ * Prisma's own migration-tracking table at request time.
  */
 function runMigrationsIfEnabled() {
   if (process.env.RUN_MIGRATIONS_ON_BOOT !== 'true') return;
   console.log('Applying pending Prisma migrations...');
-  runPrismaCommand('migrate deploy');
+  execSync(`npx prisma migrate deploy --schema="${SCHEMA_PATH}"`, { stdio: 'inherit', cwd: SERVER_ROOT });
 }
 
 /**
  * Same no-shell-access rationale as above: set RUN_SEED_ON_BOOT=true once to
  * populate the demo areas/users/chart-configs (see prisma/seed.js — it uses
  * upsert, so running it more than once is harmless), then turn it back off.
+ * This only uses the already-bundled query engine (via our own PrismaClient),
+ * not the Prisma CLI, so it doesn't have the same network dependency as
+ * `migrate deploy` above.
  */
 function runSeedIfEnabled() {
   if (process.env.RUN_SEED_ON_BOOT !== 'true') return;
