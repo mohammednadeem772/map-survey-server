@@ -1,5 +1,12 @@
 // Entry point: load environment, optionally run migrations/seed/demo
 // passwords, start listening.
+//
+// IMPORTANT (cPanel host): this app's Node process is loaded by LiteSpeed's
+// lsnode.js via require(), not a plain `node index.js`. require() cannot
+// load an ESM graph that contains a top-level await anywhere in it — Node
+// throws ERR_REQUIRE_ASYNC_MODULE if it does. Don't reintroduce top-level
+// `await import(...)` (or any other top-level await) in this file or
+// anything it imports; call async work from inside start() instead.
 import 'dotenv/config';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -59,7 +66,15 @@ async function seedDemoUsersIfEnabled() {
 function runMigrationsIfEnabled() {
   if (process.env.RUN_MIGRATIONS_ON_BOOT !== 'true') return;
   console.log('Applying pending Prisma migrations...');
-  execSync(`npx prisma migrate deploy --schema="${SCHEMA_PATH}"`, { stdio: 'inherit', cwd: SERVER_ROOT });
+  try {
+    execSync(`npx prisma migrate deploy --schema="${SCHEMA_PATH}"`, { stdio: 'inherit', cwd: SERVER_ROOT });
+  } catch (err) {
+    // Non-fatal: a migration hiccup (e.g. the CLI's own engine binary
+    // can't be fetched on this host's restricted network) shouldn't take
+    // the whole API down. Fall back to applying the SQL in
+    // prisma/migrations by hand (phpMyAdmin or any MySQL client).
+    console.error('Migration step failed, continuing without it:', err.message);
+  }
 }
 
 /**
@@ -73,7 +88,13 @@ function runMigrationsIfEnabled() {
 function runSeedIfEnabled() {
   if (process.env.RUN_SEED_ON_BOOT !== 'true') return;
   console.log('Running the database seed...');
-  execSync('node prisma/seed.js', { stdio: 'inherit', cwd: SERVER_ROOT });
+  try {
+    execSync('node prisma/seed.js', { stdio: 'inherit', cwd: SERVER_ROOT });
+  } catch (err) {
+    // Non-fatal: don't let a one-off seeding problem (e.g. the DB not
+    // reachable yet on first boot) crash the whole API process.
+    console.error('Seed step failed, continuing without it:', err.message);
+  }
 }
 
 async function start() {

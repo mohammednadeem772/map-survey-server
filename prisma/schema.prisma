@@ -21,7 +21,14 @@
 generator client {
   provider      = "prisma-client-js"
   output        = "../src/generated/prisma"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  // debian-openssl-1.1.x is the one that actually matters: it's what the
+  // cPanel host's Node sandbox reported needing (confirmed from its own
+  // stderr.log), which doesn't match the kernel's RHEL-looking version
+  // string — cPanel/CloudLinux's CageFS apparently virtualizes a Debian
+  // userland for the Node process regardless of the host kernel's distro.
+  // Keeping rhel-openssl-3.0.x too in case that assumption turns out wrong
+  // again; it only costs a bit of repo size.
+  binaryTargets = ["native", "debian-openssl-1.1.x", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
