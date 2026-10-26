@@ -1,10 +1,31 @@
-// Entry point: load environment, optionally run migrations/seed/demo
-// passwords, start listening.
+// Entry point: load environment, ensure the Prisma Client is generated,
+// then optionally run migrations/seed/demo passwords, and start listening.
 import 'dotenv/config';
 import { execSync } from 'node:child_process';
-import bcrypt from 'bcrypt';
-import { app } from './app.js';
-import { prisma } from './lib/prisma.js';
+import { existsSync } from 'node:fs';
+
+// The Prisma Client's generated code must exist before any module does
+// `import { PrismaClient } from '@prisma/client'` and instantiates it — see
+// lib/prisma.js, which does that at module-load time. On some hosts (e.g.
+// cPanel's "Run NPM Install" button) the `postinstall: prisma generate` hook
+// in package.json runs with the wrong working directory and silently fails
+// to produce it, even though the rest of `npm install` succeeds. So: check
+// for it here and generate it ourselves if missing, before importing
+// anything that depends on it.
+//
+// This has to happen via a dynamic `import()` below rather than the usual
+// static `import ... from` at the top of the file — static ESM imports are
+// all resolved before any other code in a module runs, which would run this
+// check too late to matter.
+const prismaClientDir = new URL('../node_modules/.prisma/client', import.meta.url);
+if (!existsSync(prismaClientDir)) {
+  console.log('Prisma Client not found — generating it now...');
+  execSync('npx prisma generate', { stdio: 'inherit' });
+}
+
+const { app } = await import('./app.js');
+const { prisma } = await import('./lib/prisma.js');
+const { default: bcrypt } = await import('bcrypt');
 
 const DEMO_ACCOUNTS = [
   ['admin@map.local', 'Admin@123'],
