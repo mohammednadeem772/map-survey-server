@@ -21,8 +21,10 @@ const age = blankToUndefined(
   z.coerce.number().int('Must be a whole number').min(0, 'Cannot be negative').max(120, 'Must be 120 or less').nullable().optional()
 );
 
+// Indian mobile numbers: exactly 10 digits, first digit 6-9 — matches the
+// client's copy of this check in client/src/pages/SurveyForm.jsx.
 const phone = blankToUndefined(
-  z.string().trim().regex(/^\d{10}$/, 'Phone must be exactly 10 digits').nullable().optional()
+  z.string().trim().regex(/^[6-9]\d{9}$/, 'Phone must be a valid 10-digit Indian mobile number').nullable().optional()
 );
 
 const latitude = blankToUndefined(z.coerce.number().min(-90).max(90).nullable().optional());
