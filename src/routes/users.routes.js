@@ -3,6 +3,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma.js';
 import { authenticate, allow } from '../middleware/auth.js';
+import { userCreateSchema, safeValidate } from '../lib/validation.js';
 
 const router = express.Router();
 
@@ -31,11 +32,13 @@ router.get('/', authenticate, allow('ADMIN'), async (req, res) => {
 
 // POST /api/users — create a user with a hashed password.
 router.post('/', authenticate, allow('ADMIN'), async (req, res) => {
-  const { name, email, password, role, area_id } = req.body;
-  const password_hash = await bcrypt.hash(password, 10);
+  const { data, error } = safeValidate(userCreateSchema, req.body);
+  if (error) return res.status(400).json({ message: error });
+
+  const password_hash = await bcrypt.hash(data.password, 10);
 
   const user = await prisma.user.create({
-    data: { name, email, password_hash, role, area_id: area_id || null },
+    data: { name: data.name, email: data.email, password_hash, role: data.role, area_id: data.area_id || null },
   });
 
   res.status(201).json({ id: user.id });

@@ -2,6 +2,7 @@
 import express from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authenticate, allow } from '../middleware/auth.js';
+import { areaSchema, safeValidate } from '../lib/validation.js';
 
 const router = express.Router();
 
@@ -19,10 +20,11 @@ router.get('/', authenticate, async (req, res) => {
 
 // POST /api/areas — admin only.
 router.post('/', authenticate, allow('ADMIN'), async (req, res) => {
-  const { name, ward_code, target_households = 0 } = req.body;
+  const { data, error } = safeValidate(areaSchema, req.body);
+  if (error) return res.status(400).json({ message: error });
 
   const area = await prisma.area.create({
-    data: { name, ward_code, target_households },
+    data: { name: data.name, ward_code: data.ward_code, target_households: data.target_households ?? 0 },
   });
 
   res.status(201).json({ id: area.id });

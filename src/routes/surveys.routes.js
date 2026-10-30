@@ -5,6 +5,7 @@ import express from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authenticate, scopeWhere } from '../middleware/auth.js';
 import { pickSurveyData, toDependantCreate } from '../lib/surveyData.js';
+import { surveyBaseSchema, surveyCreateSchema, safeValidate } from '../lib/validation.js';
 
 const router = express.Router();
 
@@ -59,14 +60,17 @@ router.post('/', authenticate, async (req, res) => {
   // Non-admins can only ever file surveys under their own assigned area.
   if (req.user.role !== 'ADMIN') body.area_id = req.user.areaId;
 
+  const { data, error } = safeValidate(surveyCreateSchema, body);
+  if (error) return res.status(400).json({ message: error });
+
   const surveyCode = `MAP-${Date.now().toString(36).toUpperCase()}`;
 
   const survey = await prisma.survey.create({
     data: {
-      ...pickSurveyData(body),
+      ...pickSurveyData(data),
       survey_code: surveyCode,
       surveyor_id: req.user.id,
-      dependants: { create: (body.dependants || []).map(toDependantCreate) },
+      dependants: { create: (data.dependants || []).map(toDependantCreate) },
     },
   });
 
@@ -84,14 +88,17 @@ router.put('/:id', authenticate, async (req, res) => {
   });
   if (!existing) return res.status(404).json({ message: 'Survey not found' });
 
-  const data = pickSurveyData(req.body);
+  const { data: validated, error } = safeValidate(surveyBaseSchema, req.body);
+  if (error) return res.status(400).json({ message: error });
+
+  const data = pickSurveyData(validated);
 
   // Replace dependants wholesale only when the client actually sent a list —
   // nested deleteMany + create run atomically as part of this one update.
-  if (req.body.dependants) {
+  if (validated.dependants) {
     data.dependants = {
       deleteMany: {},
-      create: req.body.dependants.map(toDependantCreate),
+      create: validated.dependants.map(toDependantCreate),
     };
   }
 
