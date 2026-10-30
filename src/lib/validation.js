@@ -73,6 +73,8 @@ export const surveyBaseSchema = z.object({
 
   spouse_name: optionalText(120),
   spouse_age: age,
+  spouse_gender: optionalText(30),
+  spouse_marital_status: optionalText(30),
   spouse_education: optionalText(80),
   spouse_occupation: optionalText(100),
   spouse_skill: optionalText(150),

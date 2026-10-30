@@ -175,6 +175,8 @@ exports.Prisma.SurveyScalarFieldEnum = {
   longitude: 'longitude',
   spouse_name: 'spouse_name',
   spouse_age: 'spouse_age',
+  spouse_gender: 'spouse_gender',
+  spouse_marital_status: 'spouse_marital_status',
   spouse_education: 'spouse_education',
   spouse_occupation: 'spouse_occupation',
   spouse_skill: 'spouse_skill',

@@ -4357,6 +4357,8 @@ export namespace Prisma {
     longitude: Decimal | null
     spouse_name: string | null
     spouse_age: number | null
+    spouse_gender: string | null
+    spouse_marital_status: string | null
     spouse_education: string | null
     spouse_occupation: string | null
     spouse_skill: string | null
@@ -4417,6 +4419,8 @@ export namespace Prisma {
     longitude: Decimal | null
     spouse_name: string | null
     spouse_age: number | null
+    spouse_gender: string | null
+    spouse_marital_status: string | null
     spouse_education: string | null
     spouse_occupation: string | null
     spouse_skill: string | null
@@ -4477,6 +4481,8 @@ export namespace Prisma {
     longitude: number
     spouse_name: number
     spouse_age: number
+    spouse_gender: number
+    spouse_marital_status: number
     spouse_education: number
     spouse_occupation: number
     spouse_skill: number
@@ -4578,6 +4584,8 @@ export namespace Prisma {
     longitude?: true
     spouse_name?: true
     spouse_age?: true
+    spouse_gender?: true
+    spouse_marital_status?: true
     spouse_education?: true
     spouse_occupation?: true
     spouse_skill?: true
@@ -4638,6 +4646,8 @@ export namespace Prisma {
     longitude?: true
     spouse_name?: true
     spouse_age?: true
+    spouse_gender?: true
+    spouse_marital_status?: true
     spouse_education?: true
     spouse_occupation?: true
     spouse_skill?: true
@@ -4698,6 +4708,8 @@ export namespace Prisma {
     longitude?: true
     spouse_name?: true
     spouse_age?: true
+    spouse_gender?: true
+    spouse_marital_status?: true
     spouse_education?: true
     spouse_occupation?: true
     spouse_skill?: true
@@ -4848,6 +4860,8 @@ export namespace Prisma {
     longitude: Decimal | null
     spouse_name: string | null
     spouse_age: number | null
+    spouse_gender: string | null
+    spouse_marital_status: string | null
     spouse_education: string | null
     spouse_occupation: string | null
     spouse_skill: string | null
@@ -4930,6 +4944,8 @@ export namespace Prisma {
     longitude?: boolean
     spouse_name?: boolean
     spouse_age?: boolean
+    spouse_gender?: boolean
+    spouse_marital_status?: boolean
     spouse_education?: boolean
     spouse_occupation?: boolean
     spouse_skill?: boolean
@@ -4998,6 +5014,8 @@ export namespace Prisma {
     longitude?: boolean
     spouse_name?: boolean
     spouse_age?: boolean
+    spouse_gender?: boolean
+    spouse_marital_status?: boolean
     spouse_education?: boolean
     spouse_occupation?: boolean
     spouse_skill?: boolean
@@ -5075,6 +5093,8 @@ export namespace Prisma {
       longitude: Prisma.Decimal | null
       spouse_name: string | null
       spouse_age: number | null
+      spouse_gender: string | null
+      spouse_marital_status: string | null
       spouse_education: string | null
       spouse_occupation: string | null
       spouse_skill: string | null
@@ -5507,6 +5527,8 @@ export namespace Prisma {
     readonly longitude: FieldRef<"Survey", 'Decimal'>
     readonly spouse_name: FieldRef<"Survey", 'String'>
     readonly spouse_age: FieldRef<"Survey", 'Int'>
+    readonly spouse_gender: FieldRef<"Survey", 'String'>
+    readonly spouse_marital_status: FieldRef<"Survey", 'String'>
     readonly spouse_education: FieldRef<"Survey", 'String'>
     readonly spouse_occupation: FieldRef<"Survey", 'String'>
     readonly spouse_skill: FieldRef<"Survey", 'String'>
@@ -7904,6 +7926,8 @@ export namespace Prisma {
     longitude: 'longitude',
     spouse_name: 'spouse_name',
     spouse_age: 'spouse_age',
+    spouse_gender: 'spouse_gender',
+    spouse_marital_status: 'spouse_marital_status',
     spouse_education: 'spouse_education',
     spouse_occupation: 'spouse_occupation',
     spouse_skill: 'spouse_skill',
@@ -8337,6 +8361,8 @@ export namespace Prisma {
     longitude?: DecimalNullableFilter<"Survey"> | Decimal | DecimalJsLike | number | string | null
     spouse_name?: StringNullableFilter<"Survey"> | string | null
     spouse_age?: IntNullableFilter<"Survey"> | number | null
+    spouse_gender?: StringNullableFilter<"Survey"> | string | null
+    spouse_marital_status?: StringNullableFilter<"Survey"> | string | null
     spouse_education?: StringNullableFilter<"Survey"> | string | null
     spouse_occupation?: StringNullableFilter<"Survey"> | string | null
     spouse_skill?: StringNullableFilter<"Survey"> | string | null
@@ -8403,6 +8429,8 @@ export namespace Prisma {
     longitude?: SortOrderInput | SortOrder
     spouse_name?: SortOrderInput | SortOrder
     spouse_age?: SortOrderInput | SortOrder
+    spouse_gender?: SortOrderInput | SortOrder
+    spouse_marital_status?: SortOrderInput | SortOrder
     spouse_education?: SortOrderInput | SortOrder
     spouse_occupation?: SortOrderInput | SortOrder
     spouse_skill?: SortOrderInput | SortOrder
@@ -8472,6 +8500,8 @@ export namespace Prisma {
     longitude?: DecimalNullableFilter<"Survey"> | Decimal | DecimalJsLike | number | string | null
     spouse_name?: StringNullableFilter<"Survey"> | string | null
     spouse_age?: IntNullableFilter<"Survey"> | number | null
+    spouse_gender?: StringNullableFilter<"Survey"> | string | null
+    spouse_marital_status?: StringNullableFilter<"Survey"> | string | null
     spouse_education?: StringNullableFilter<"Survey"> | string | null
     spouse_occupation?: StringNullableFilter<"Survey"> | string | null
     spouse_skill?: StringNullableFilter<"Survey"> | string | null
@@ -8538,6 +8568,8 @@ export namespace Prisma {
     longitude?: SortOrderInput | SortOrder
     spouse_name?: SortOrderInput | SortOrder
     spouse_age?: SortOrderInput | SortOrder
+    spouse_gender?: SortOrderInput | SortOrder
+    spouse_marital_status?: SortOrderInput | SortOrder
     spouse_education?: SortOrderInput | SortOrder
     spouse_occupation?: SortOrderInput | SortOrder
     spouse_skill?: SortOrderInput | SortOrder
@@ -8609,6 +8641,8 @@ export namespace Prisma {
     longitude?: DecimalNullableWithAggregatesFilter<"Survey"> | Decimal | DecimalJsLike | number | string | null
     spouse_name?: StringNullableWithAggregatesFilter<"Survey"> | string | null
     spouse_age?: IntNullableWithAggregatesFilter<"Survey"> | number | null
+    spouse_gender?: StringNullableWithAggregatesFilter<"Survey"> | string | null
+    spouse_marital_status?: StringNullableWithAggregatesFilter<"Survey"> | string | null
     spouse_education?: StringNullableWithAggregatesFilter<"Survey"> | string | null
     spouse_occupation?: StringNullableWithAggregatesFilter<"Survey"> | string | null
     spouse_skill?: StringNullableWithAggregatesFilter<"Survey"> | string | null
@@ -9069,6 +9103,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -9135,6 +9171,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -9196,6 +9234,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9262,6 +9302,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9326,6 +9368,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -9386,6 +9430,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9449,6 +9495,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10098,6 +10146,8 @@ export namespace Prisma {
     longitude?: SortOrder
     spouse_name?: SortOrder
     spouse_age?: SortOrder
+    spouse_gender?: SortOrder
+    spouse_marital_status?: SortOrder
     spouse_education?: SortOrder
     spouse_occupation?: SortOrder
     spouse_skill?: SortOrder
@@ -10179,6 +10229,8 @@ export namespace Prisma {
     longitude?: SortOrder
     spouse_name?: SortOrder
     spouse_age?: SortOrder
+    spouse_gender?: SortOrder
+    spouse_marital_status?: SortOrder
     spouse_education?: SortOrder
     spouse_occupation?: SortOrder
     spouse_skill?: SortOrder
@@ -10239,6 +10291,8 @@ export namespace Prisma {
     longitude?: SortOrder
     spouse_name?: SortOrder
     spouse_age?: SortOrder
+    spouse_gender?: SortOrder
+    spouse_marital_status?: SortOrder
     spouse_education?: SortOrder
     spouse_occupation?: SortOrder
     spouse_skill?: SortOrder
@@ -11194,6 +11248,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -11258,6 +11314,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -11382,6 +11440,8 @@ export namespace Prisma {
     longitude?: DecimalNullableFilter<"Survey"> | Decimal | DecimalJsLike | number | string | null
     spouse_name?: StringNullableFilter<"Survey"> | string | null
     spouse_age?: IntNullableFilter<"Survey"> | number | null
+    spouse_gender?: StringNullableFilter<"Survey"> | string | null
+    spouse_marital_status?: StringNullableFilter<"Survey"> | string | null
     spouse_education?: StringNullableFilter<"Survey"> | string | null
     spouse_occupation?: StringNullableFilter<"Survey"> | string | null
     spouse_skill?: StringNullableFilter<"Survey"> | string | null
@@ -11468,6 +11528,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -11532,6 +11594,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -11857,6 +11921,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -11922,6 +11988,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -11998,6 +12066,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12063,6 +12133,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12136,6 +12208,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -12230,6 +12304,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12294,6 +12370,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12357,6 +12435,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12419,6 +12499,8 @@ export namespace Prisma {
     longitude?: Decimal | DecimalJsLike | number | string | null
     spouse_name?: string | null
     spouse_age?: number | null
+    spouse_gender?: string | null
+    spouse_marital_status?: string | null
     spouse_education?: string | null
     spouse_occupation?: string | null
     spouse_skill?: string | null
@@ -12479,6 +12561,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12543,6 +12627,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12606,6 +12692,8 @@ export namespace Prisma {
     longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     spouse_name?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_age?: NullableIntFieldUpdateOperationsInput | number | null
+    spouse_gender?: NullableStringFieldUpdateOperationsInput | string | null
+    spouse_marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_education?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_occupation?: NullableStringFieldUpdateOperationsInput | string | null
     spouse_skill?: NullableStringFieldUpdateOperationsInput | string | null

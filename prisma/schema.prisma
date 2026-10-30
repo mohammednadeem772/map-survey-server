@@ -141,6 +141,8 @@ model Survey {
   // Spouse
   spouse_name        String?  @db.VarChar(120)
   spouse_age         Int?
+  spouse_gender      String?  @db.VarChar(30)
+  spouse_marital_status String? @db.VarChar(30)
   spouse_education   String?  @db.VarChar(80)
   spouse_occupation  String?  @db.VarChar(100)
   spouse_skill       String?  @db.VarChar(150)

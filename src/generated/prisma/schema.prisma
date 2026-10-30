@@ -139,13 +139,15 @@ model Survey {
   longitude Decimal? @db.Decimal(10, 7)
 
   // Spouse
-  spouse_name       String? @db.VarChar(120)
-  spouse_age        Int?
-  spouse_education  String? @db.VarChar(80)
-  spouse_occupation String? @db.VarChar(100)
-  spouse_skill      String? @db.VarChar(150)
-  spouse_namaz      String? @db.VarChar(30)
-  spouse_income     Decimal @default(0) @db.Decimal(12, 2)
+  spouse_name           String? @db.VarChar(120)
+  spouse_age            Int?
+  spouse_gender         String? @db.VarChar(30)
+  spouse_marital_status String? @db.VarChar(30)
+  spouse_education      String? @db.VarChar(80)
+  spouse_occupation     String? @db.VarChar(100)
+  spouse_skill          String? @db.VarChar(150)
+  spouse_namaz          String? @db.VarChar(30)
+  spouse_income         Decimal @default(0) @db.Decimal(12, 2)
 
   // Housing
   house_tenure       String? @db.VarChar(40)
