@@ -12,6 +12,7 @@ import usersRoutes from './routes/users.routes.js';
 import surveysRoutes from './routes/surveys.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import chartConfigsRoutes from './routes/chartConfigs.routes.js';
+import dropdownOptionsRoutes from './routes/dropdownOptions.routes.js';
 
 export const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/surveys', surveysRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/chart-configs', chartConfigsRoutes);
+app.use('/api/dropdown-options', dropdownOptionsRoutes);
 
 // Catch-all error handler. Never leak internals (stack traces, Prisma error
 // shapes) to the client — this app stores sensitive household data.

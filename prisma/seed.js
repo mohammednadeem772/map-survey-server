@@ -4,6 +4,7 @@
 // / `migrate reset`, since it's registered under "prisma.seed" in package.json).
 import { PrismaClient } from '../src/generated/prisma/index.js';
 import bcrypt from 'bcrypt';
+import { DROPDOWN_SEED } from '../src/lib/dropdownCategories.js';
 
 const prisma = new PrismaClient();
 
@@ -48,7 +49,19 @@ async function main() {
     if (!existing) await prisma.chartConfig.create({ data: c });
   }
 
-  console.log('Seed complete: 2 areas, 3 demo users, 4 chart configs.');
+  let optionCount = 0;
+  for (const [category, values] of Object.entries(DROPDOWN_SEED)) {
+    for (const [index, value] of values.entries()) {
+      await prisma.dropdownOption.upsert({
+        where: { category_value: { category, value } },
+        update: {},
+        create: { category, value, sort_order: index },
+      });
+      optionCount += 1;
+    }
+  }
+
+  console.log(`Seed complete: 2 areas, 3 demo users, 4 chart configs, ${optionCount} dropdown options.`);
 }
 
 main()

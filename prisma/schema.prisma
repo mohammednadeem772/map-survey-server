@@ -54,6 +54,29 @@ model Area {
   @@map("areas")
 }
 
+/// Admin-managed dropdown option lists for the survey form (gender,
+/// occupation, house tenure, etc.) — replaces what used to be hardcoded
+/// JS arrays in client/src/pages/SurveyForm.jsx, so the field team can add
+/// a missing option (a new occupation, a local dialect of "house condition")
+/// without a code change. `category` is one of the fixed keys the survey
+/// form knows how to render (see server/src/lib/dropdownCategories.js for
+/// the authoritative list) — not itself admin-editable, only the values
+/// within a category are. Deactivating a value (rather than deleting it)
+/// keeps it correct on any survey that already recorded it; it just stops
+/// being offered for new entries.
+model DropdownOption {
+  id          Int      @id @default(autoincrement())
+  category    String   @db.VarChar(40)
+  value       String   @db.VarChar(150)
+  sort_order  Int      @default(0)
+  active      Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  @@unique([category, value])
+  @@index([category])
+  @@map("dropdown_options")
+}
+
 enum Role {
   ADMIN
   SUPERVISOR

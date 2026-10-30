@@ -132,6 +132,15 @@ exports.Prisma.AreaScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.DropdownOptionScalarFieldEnum = {
+  id: 'id',
+  category: 'category',
+  value: 'value',
+  sort_order: 'sort_order',
+  active: 'active',
+  created_at: 'created_at'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -284,6 +293,7 @@ exports.ChartType = exports.$Enums.ChartType = {
 
 exports.Prisma.ModelName = {
   Area: 'Area',
+  DropdownOption: 'DropdownOption',
   User: 'User',
   Survey: 'Survey',
   Dependant: 'Dependant',

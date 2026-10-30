@@ -19,6 +19,20 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Area = $Result.DefaultSelection<Prisma.$AreaPayload>
 /**
+ * Model DropdownOption
+ * Admin-managed dropdown option lists for the survey form (gender,
+ * occupation, house tenure, etc.) — replaces what used to be hardcoded
+ * JS arrays in client/src/pages/SurveyForm.jsx, so the field team can add
+ * a missing option (a new occupation, a local dialect of "house condition")
+ * without a code change. `category` is one of the fixed keys the survey
+ * form knows how to render (see server/src/lib/dropdownCategories.js for
+ * the authoritative list) — not itself admin-editable, only the values
+ * within a category are. Deactivating a value (rather than deleting it)
+ * keeps it correct on any survey that already recorded it; it just stops
+ * being offered for new entries.
+ */
+export type DropdownOption = $Result.DefaultSelection<Prisma.$DropdownOptionPayload>
+/**
  * Model User
  * Admins see everything, supervisors are scoped to their area, surveyors to
  * their own records — see src/middleware/auth.js `scopeWhere()`.
@@ -231,6 +245,16 @@ export class PrismaClient<
     * ```
     */
   get area(): Prisma.AreaDelegate<ExtArgs>;
+
+  /**
+   * `prisma.dropdownOption`: Exposes CRUD operations for the **DropdownOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DropdownOptions
+    * const dropdownOptions = await prisma.dropdownOption.findMany()
+    * ```
+    */
+  get dropdownOption(): Prisma.DropdownOptionDelegate<ExtArgs>;
 
   /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
@@ -713,6 +737,7 @@ export namespace Prisma {
 
   export const ModelName: {
     Area: 'Area',
+    DropdownOption: 'DropdownOption',
     User: 'User',
     Survey: 'Survey',
     Dependant: 'Dependant',
@@ -732,7 +757,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "area" | "user" | "survey" | "dependant" | "chartConfig"
+      modelProps: "area" | "dropdownOption" | "user" | "survey" | "dependant" | "chartConfig"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -799,6 +824,72 @@ export namespace Prisma {
           count: {
             args: Prisma.AreaCountArgs<ExtArgs>
             result: $Utils.Optional<AreaCountAggregateOutputType> | number
+          }
+        }
+      }
+      DropdownOption: {
+        payload: Prisma.$DropdownOptionPayload<ExtArgs>
+        fields: Prisma.DropdownOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DropdownOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DropdownOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.DropdownOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DropdownOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>
+          }
+          findMany: {
+            args: Prisma.DropdownOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>[]
+          }
+          create: {
+            args: Prisma.DropdownOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>
+          }
+          createMany: {
+            args: Prisma.DropdownOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.DropdownOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>
+          }
+          update: {
+            args: Prisma.DropdownOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DropdownOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DropdownOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DropdownOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DropdownOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.DropdownOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDropdownOption>
+          }
+          groupBy: {
+            args: Prisma.DropdownOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DropdownOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DropdownOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<DropdownOptionCountAggregateOutputType> | number
           }
         }
       }
@@ -2310,6 +2401,887 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AreaInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DropdownOption
+   */
+
+  export type AggregateDropdownOption = {
+    _count: DropdownOptionCountAggregateOutputType | null
+    _avg: DropdownOptionAvgAggregateOutputType | null
+    _sum: DropdownOptionSumAggregateOutputType | null
+    _min: DropdownOptionMinAggregateOutputType | null
+    _max: DropdownOptionMaxAggregateOutputType | null
+  }
+
+  export type DropdownOptionAvgAggregateOutputType = {
+    id: number | null
+    sort_order: number | null
+  }
+
+  export type DropdownOptionSumAggregateOutputType = {
+    id: number | null
+    sort_order: number | null
+  }
+
+  export type DropdownOptionMinAggregateOutputType = {
+    id: number | null
+    category: string | null
+    value: string | null
+    sort_order: number | null
+    active: boolean | null
+    created_at: Date | null
+  }
+
+  export type DropdownOptionMaxAggregateOutputType = {
+    id: number | null
+    category: string | null
+    value: string | null
+    sort_order: number | null
+    active: boolean | null
+    created_at: Date | null
+  }
+
+  export type DropdownOptionCountAggregateOutputType = {
+    id: number
+    category: number
+    value: number
+    sort_order: number
+    active: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type DropdownOptionAvgAggregateInputType = {
+    id?: true
+    sort_order?: true
+  }
+
+  export type DropdownOptionSumAggregateInputType = {
+    id?: true
+    sort_order?: true
+  }
+
+  export type DropdownOptionMinAggregateInputType = {
+    id?: true
+    category?: true
+    value?: true
+    sort_order?: true
+    active?: true
+    created_at?: true
+  }
+
+  export type DropdownOptionMaxAggregateInputType = {
+    id?: true
+    category?: true
+    value?: true
+    sort_order?: true
+    active?: true
+    created_at?: true
+  }
+
+  export type DropdownOptionCountAggregateInputType = {
+    id?: true
+    category?: true
+    value?: true
+    sort_order?: true
+    active?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type DropdownOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DropdownOption to aggregate.
+     */
+    where?: DropdownOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DropdownOptions to fetch.
+     */
+    orderBy?: DropdownOptionOrderByWithRelationInput | DropdownOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DropdownOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DropdownOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DropdownOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DropdownOptions
+    **/
+    _count?: true | DropdownOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DropdownOptionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DropdownOptionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DropdownOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DropdownOptionMaxAggregateInputType
+  }
+
+  export type GetDropdownOptionAggregateType<T extends DropdownOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDropdownOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDropdownOption[P]>
+      : GetScalarType<T[P], AggregateDropdownOption[P]>
+  }
+
+
+
+
+  export type DropdownOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DropdownOptionWhereInput
+    orderBy?: DropdownOptionOrderByWithAggregationInput | DropdownOptionOrderByWithAggregationInput[]
+    by: DropdownOptionScalarFieldEnum[] | DropdownOptionScalarFieldEnum
+    having?: DropdownOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DropdownOptionCountAggregateInputType | true
+    _avg?: DropdownOptionAvgAggregateInputType
+    _sum?: DropdownOptionSumAggregateInputType
+    _min?: DropdownOptionMinAggregateInputType
+    _max?: DropdownOptionMaxAggregateInputType
+  }
+
+  export type DropdownOptionGroupByOutputType = {
+    id: number
+    category: string
+    value: string
+    sort_order: number
+    active: boolean
+    created_at: Date
+    _count: DropdownOptionCountAggregateOutputType | null
+    _avg: DropdownOptionAvgAggregateOutputType | null
+    _sum: DropdownOptionSumAggregateOutputType | null
+    _min: DropdownOptionMinAggregateOutputType | null
+    _max: DropdownOptionMaxAggregateOutputType | null
+  }
+
+  type GetDropdownOptionGroupByPayload<T extends DropdownOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DropdownOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DropdownOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DropdownOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], DropdownOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DropdownOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    category?: boolean
+    value?: boolean
+    sort_order?: boolean
+    active?: boolean
+    created_at?: boolean
+  }, ExtArgs["result"]["dropdownOption"]>
+
+
+  export type DropdownOptionSelectScalar = {
+    id?: boolean
+    category?: boolean
+    value?: boolean
+    sort_order?: boolean
+    active?: boolean
+    created_at?: boolean
+  }
+
+
+  export type $DropdownOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DropdownOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      category: string
+      value: string
+      sort_order: number
+      active: boolean
+      created_at: Date
+    }, ExtArgs["result"]["dropdownOption"]>
+    composites: {}
+  }
+
+  type DropdownOptionGetPayload<S extends boolean | null | undefined | DropdownOptionDefaultArgs> = $Result.GetResult<Prisma.$DropdownOptionPayload, S>
+
+  type DropdownOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DropdownOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DropdownOptionCountAggregateInputType | true
+    }
+
+  export interface DropdownOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DropdownOption'], meta: { name: 'DropdownOption' } }
+    /**
+     * Find zero or one DropdownOption that matches the filter.
+     * @param {DropdownOptionFindUniqueArgs} args - Arguments to find a DropdownOption
+     * @example
+     * // Get one DropdownOption
+     * const dropdownOption = await prisma.dropdownOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DropdownOptionFindUniqueArgs>(args: SelectSubset<T, DropdownOptionFindUniqueArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DropdownOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DropdownOptionFindUniqueOrThrowArgs} args - Arguments to find a DropdownOption
+     * @example
+     * // Get one DropdownOption
+     * const dropdownOption = await prisma.dropdownOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DropdownOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, DropdownOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DropdownOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionFindFirstArgs} args - Arguments to find a DropdownOption
+     * @example
+     * // Get one DropdownOption
+     * const dropdownOption = await prisma.dropdownOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DropdownOptionFindFirstArgs>(args?: SelectSubset<T, DropdownOptionFindFirstArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DropdownOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionFindFirstOrThrowArgs} args - Arguments to find a DropdownOption
+     * @example
+     * // Get one DropdownOption
+     * const dropdownOption = await prisma.dropdownOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DropdownOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, DropdownOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DropdownOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DropdownOptions
+     * const dropdownOptions = await prisma.dropdownOption.findMany()
+     * 
+     * // Get first 10 DropdownOptions
+     * const dropdownOptions = await prisma.dropdownOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dropdownOptionWithIdOnly = await prisma.dropdownOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DropdownOptionFindManyArgs>(args?: SelectSubset<T, DropdownOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DropdownOption.
+     * @param {DropdownOptionCreateArgs} args - Arguments to create a DropdownOption.
+     * @example
+     * // Create one DropdownOption
+     * const DropdownOption = await prisma.dropdownOption.create({
+     *   data: {
+     *     // ... data to create a DropdownOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends DropdownOptionCreateArgs>(args: SelectSubset<T, DropdownOptionCreateArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DropdownOptions.
+     * @param {DropdownOptionCreateManyArgs} args - Arguments to create many DropdownOptions.
+     * @example
+     * // Create many DropdownOptions
+     * const dropdownOption = await prisma.dropdownOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DropdownOptionCreateManyArgs>(args?: SelectSubset<T, DropdownOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a DropdownOption.
+     * @param {DropdownOptionDeleteArgs} args - Arguments to delete one DropdownOption.
+     * @example
+     * // Delete one DropdownOption
+     * const DropdownOption = await prisma.dropdownOption.delete({
+     *   where: {
+     *     // ... filter to delete one DropdownOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DropdownOptionDeleteArgs>(args: SelectSubset<T, DropdownOptionDeleteArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DropdownOption.
+     * @param {DropdownOptionUpdateArgs} args - Arguments to update one DropdownOption.
+     * @example
+     * // Update one DropdownOption
+     * const dropdownOption = await prisma.dropdownOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DropdownOptionUpdateArgs>(args: SelectSubset<T, DropdownOptionUpdateArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DropdownOptions.
+     * @param {DropdownOptionDeleteManyArgs} args - Arguments to filter DropdownOptions to delete.
+     * @example
+     * // Delete a few DropdownOptions
+     * const { count } = await prisma.dropdownOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DropdownOptionDeleteManyArgs>(args?: SelectSubset<T, DropdownOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DropdownOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DropdownOptions
+     * const dropdownOption = await prisma.dropdownOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DropdownOptionUpdateManyArgs>(args: SelectSubset<T, DropdownOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DropdownOption.
+     * @param {DropdownOptionUpsertArgs} args - Arguments to update or create a DropdownOption.
+     * @example
+     * // Update or create a DropdownOption
+     * const dropdownOption = await prisma.dropdownOption.upsert({
+     *   create: {
+     *     // ... data to create a DropdownOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DropdownOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DropdownOptionUpsertArgs>(args: SelectSubset<T, DropdownOptionUpsertArgs<ExtArgs>>): Prisma__DropdownOptionClient<$Result.GetResult<Prisma.$DropdownOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DropdownOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionCountArgs} args - Arguments to filter DropdownOptions to count.
+     * @example
+     * // Count the number of DropdownOptions
+     * const count = await prisma.dropdownOption.count({
+     *   where: {
+     *     // ... the filter for the DropdownOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DropdownOptionCountArgs>(
+      args?: Subset<T, DropdownOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DropdownOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DropdownOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DropdownOptionAggregateArgs>(args: Subset<T, DropdownOptionAggregateArgs>): Prisma.PrismaPromise<GetDropdownOptionAggregateType<T>>
+
+    /**
+     * Group by DropdownOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DropdownOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DropdownOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DropdownOptionGroupByArgs['orderBy'] }
+        : { orderBy?: DropdownOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DropdownOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDropdownOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DropdownOption model
+   */
+  readonly fields: DropdownOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DropdownOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DropdownOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DropdownOption model
+   */ 
+  interface DropdownOptionFieldRefs {
+    readonly id: FieldRef<"DropdownOption", 'Int'>
+    readonly category: FieldRef<"DropdownOption", 'String'>
+    readonly value: FieldRef<"DropdownOption", 'String'>
+    readonly sort_order: FieldRef<"DropdownOption", 'Int'>
+    readonly active: FieldRef<"DropdownOption", 'Boolean'>
+    readonly created_at: FieldRef<"DropdownOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DropdownOption findUnique
+   */
+  export type DropdownOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DropdownOption to fetch.
+     */
+    where: DropdownOptionWhereUniqueInput
+  }
+
+  /**
+   * DropdownOption findUniqueOrThrow
+   */
+  export type DropdownOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DropdownOption to fetch.
+     */
+    where: DropdownOptionWhereUniqueInput
+  }
+
+  /**
+   * DropdownOption findFirst
+   */
+  export type DropdownOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DropdownOption to fetch.
+     */
+    where?: DropdownOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DropdownOptions to fetch.
+     */
+    orderBy?: DropdownOptionOrderByWithRelationInput | DropdownOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DropdownOptions.
+     */
+    cursor?: DropdownOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DropdownOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DropdownOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DropdownOptions.
+     */
+    distinct?: DropdownOptionScalarFieldEnum | DropdownOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DropdownOption findFirstOrThrow
+   */
+  export type DropdownOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DropdownOption to fetch.
+     */
+    where?: DropdownOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DropdownOptions to fetch.
+     */
+    orderBy?: DropdownOptionOrderByWithRelationInput | DropdownOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DropdownOptions.
+     */
+    cursor?: DropdownOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DropdownOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DropdownOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DropdownOptions.
+     */
+    distinct?: DropdownOptionScalarFieldEnum | DropdownOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DropdownOption findMany
+   */
+  export type DropdownOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DropdownOptions to fetch.
+     */
+    where?: DropdownOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DropdownOptions to fetch.
+     */
+    orderBy?: DropdownOptionOrderByWithRelationInput | DropdownOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DropdownOptions.
+     */
+    cursor?: DropdownOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DropdownOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DropdownOptions.
+     */
+    skip?: number
+    distinct?: DropdownOptionScalarFieldEnum | DropdownOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DropdownOption create
+   */
+  export type DropdownOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a DropdownOption.
+     */
+    data: XOR<DropdownOptionCreateInput, DropdownOptionUncheckedCreateInput>
+  }
+
+  /**
+   * DropdownOption createMany
+   */
+  export type DropdownOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DropdownOptions.
+     */
+    data: DropdownOptionCreateManyInput | DropdownOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DropdownOption update
+   */
+  export type DropdownOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a DropdownOption.
+     */
+    data: XOR<DropdownOptionUpdateInput, DropdownOptionUncheckedUpdateInput>
+    /**
+     * Choose, which DropdownOption to update.
+     */
+    where: DropdownOptionWhereUniqueInput
+  }
+
+  /**
+   * DropdownOption updateMany
+   */
+  export type DropdownOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DropdownOptions.
+     */
+    data: XOR<DropdownOptionUpdateManyMutationInput, DropdownOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DropdownOptions to update
+     */
+    where?: DropdownOptionWhereInput
+  }
+
+  /**
+   * DropdownOption upsert
+   */
+  export type DropdownOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the DropdownOption to update in case it exists.
+     */
+    where: DropdownOptionWhereUniqueInput
+    /**
+     * In case the DropdownOption found by the `where` argument doesn't exist, create a new DropdownOption with this data.
+     */
+    create: XOR<DropdownOptionCreateInput, DropdownOptionUncheckedCreateInput>
+    /**
+     * In case the DropdownOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DropdownOptionUpdateInput, DropdownOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * DropdownOption delete
+   */
+  export type DropdownOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
+    /**
+     * Filter which DropdownOption to delete.
+     */
+    where: DropdownOptionWhereUniqueInput
+  }
+
+  /**
+   * DropdownOption deleteMany
+   */
+  export type DropdownOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DropdownOptions to delete
+     */
+    where?: DropdownOptionWhereInput
+  }
+
+  /**
+   * DropdownOption without action
+   */
+  export type DropdownOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DropdownOption
+     */
+    select?: DropdownOptionSelect<ExtArgs> | null
   }
 
 
@@ -6883,6 +7855,18 @@ export namespace Prisma {
   export type AreaScalarFieldEnum = (typeof AreaScalarFieldEnum)[keyof typeof AreaScalarFieldEnum]
 
 
+  export const DropdownOptionScalarFieldEnum: {
+    id: 'id',
+    category: 'category',
+    value: 'value',
+    sort_order: 'sort_order',
+    active: 'active',
+    created_at: 'created_at'
+  };
+
+  export type DropdownOptionScalarFieldEnum = (typeof DropdownOptionScalarFieldEnum)[keyof typeof DropdownOptionScalarFieldEnum]
+
+
   export const UserScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -7186,6 +8170,66 @@ export namespace Prisma {
     active?: BoolWithAggregatesFilter<"Area"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Area"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Area"> | Date | string
+  }
+
+  export type DropdownOptionWhereInput = {
+    AND?: DropdownOptionWhereInput | DropdownOptionWhereInput[]
+    OR?: DropdownOptionWhereInput[]
+    NOT?: DropdownOptionWhereInput | DropdownOptionWhereInput[]
+    id?: IntFilter<"DropdownOption"> | number
+    category?: StringFilter<"DropdownOption"> | string
+    value?: StringFilter<"DropdownOption"> | string
+    sort_order?: IntFilter<"DropdownOption"> | number
+    active?: BoolFilter<"DropdownOption"> | boolean
+    created_at?: DateTimeFilter<"DropdownOption"> | Date | string
+  }
+
+  export type DropdownOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    value?: SortOrder
+    sort_order?: SortOrder
+    active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type DropdownOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    category_value?: DropdownOptionCategoryValueCompoundUniqueInput
+    AND?: DropdownOptionWhereInput | DropdownOptionWhereInput[]
+    OR?: DropdownOptionWhereInput[]
+    NOT?: DropdownOptionWhereInput | DropdownOptionWhereInput[]
+    category?: StringFilter<"DropdownOption"> | string
+    value?: StringFilter<"DropdownOption"> | string
+    sort_order?: IntFilter<"DropdownOption"> | number
+    active?: BoolFilter<"DropdownOption"> | boolean
+    created_at?: DateTimeFilter<"DropdownOption"> | Date | string
+  }, "id" | "category_value">
+
+  export type DropdownOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    value?: SortOrder
+    sort_order?: SortOrder
+    active?: SortOrder
+    created_at?: SortOrder
+    _count?: DropdownOptionCountOrderByAggregateInput
+    _avg?: DropdownOptionAvgOrderByAggregateInput
+    _max?: DropdownOptionMaxOrderByAggregateInput
+    _min?: DropdownOptionMinOrderByAggregateInput
+    _sum?: DropdownOptionSumOrderByAggregateInput
+  }
+
+  export type DropdownOptionScalarWhereWithAggregatesInput = {
+    AND?: DropdownOptionScalarWhereWithAggregatesInput | DropdownOptionScalarWhereWithAggregatesInput[]
+    OR?: DropdownOptionScalarWhereWithAggregatesInput[]
+    NOT?: DropdownOptionScalarWhereWithAggregatesInput | DropdownOptionScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"DropdownOption"> | number
+    category?: StringWithAggregatesFilter<"DropdownOption"> | string
+    value?: StringWithAggregatesFilter<"DropdownOption"> | string
+    sort_order?: IntWithAggregatesFilter<"DropdownOption"> | number
+    active?: BoolWithAggregatesFilter<"DropdownOption"> | boolean
+    created_at?: DateTimeWithAggregatesFilter<"DropdownOption"> | Date | string
   }
 
   export type UserWhereInput = {
@@ -7860,6 +8904,66 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DropdownOptionCreateInput = {
+    category: string
+    value: string
+    sort_order?: number
+    active?: boolean
+    created_at?: Date | string
+  }
+
+  export type DropdownOptionUncheckedCreateInput = {
+    id?: number
+    category: string
+    value: string
+    sort_order?: number
+    active?: boolean
+    created_at?: Date | string
+  }
+
+  export type DropdownOptionUpdateInput = {
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    sort_order?: IntFieldUpdateOperationsInput | number
+    active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DropdownOptionUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    sort_order?: IntFieldUpdateOperationsInput | number
+    active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DropdownOptionCreateManyInput = {
+    id?: number
+    category: string
+    value: string
+    sort_order?: number
+    active?: boolean
+    created_at?: Date | string
+  }
+
+  export type DropdownOptionUpdateManyMutationInput = {
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    sort_order?: IntFieldUpdateOperationsInput | number
+    active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DropdownOptionUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    category?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    sort_order?: IntFieldUpdateOperationsInput | number
+    active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateInput = {
@@ -8743,6 +9847,48 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type DropdownOptionCategoryValueCompoundUniqueInput = {
+    category: string
+    value: string
+  }
+
+  export type DropdownOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    value?: SortOrder
+    sort_order?: SortOrder
+    active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type DropdownOptionAvgOrderByAggregateInput = {
+    id?: SortOrder
+    sort_order?: SortOrder
+  }
+
+  export type DropdownOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    value?: SortOrder
+    sort_order?: SortOrder
+    active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type DropdownOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    value?: SortOrder
+    sort_order?: SortOrder
+    active?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type DropdownOptionSumOrderByAggregateInput = {
+    id?: SortOrder
+    sort_order?: SortOrder
   }
 
   export type EnumRoleFilter<$PrismaModel = never> = {
@@ -11597,6 +12743,10 @@ export namespace Prisma {
      * @deprecated Use AreaDefaultArgs instead
      */
     export type AreaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AreaDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DropdownOptionDefaultArgs instead
+     */
+    export type DropdownOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DropdownOptionDefaultArgs<ExtArgs>
     /**
      * @deprecated Use UserDefaultArgs instead
      */
