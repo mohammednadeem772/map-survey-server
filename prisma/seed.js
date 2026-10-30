@@ -22,13 +22,20 @@ async function main() {
     }),
   ]);
 
-  const demoUsers = [
-    { name: 'MAP Administrator', email: 'admin@map.local', password: 'Admin@123', role: 'ADMIN', area_id: null },
-    { name: 'Area Supervisor', email: 'supervisor@map.local', password: 'Supervisor@123', role: 'SUPERVISOR', area_id: newTown.id },
-    { name: 'Field Surveyor', email: 'surveyor@map.local', password: 'Surveyor@123', role: 'SURVEYOR', area_id: newTown.id },
-  ];
+  // Real production admins (not demo accounts) — set via SEED_ADMIN_* env vars so the
+  // password never lives in source control; falls back to the old local-dev demo admin
+  // when those aren't set, so `npm run seed` still works for a fresh local DB.
+  const adminUsers = process.env.SEED_ADMIN_EMAILS
+    ? process.env.SEED_ADMIN_EMAILS.split(',').map((email, i) => ({
+        name: (process.env.SEED_ADMIN_NAMES || '').split(',')[i]?.trim() || email.trim(),
+        email: email.trim(),
+        password: process.env.SEED_ADMIN_PASSWORDS.split(',')[i].trim(),
+        role: 'ADMIN',
+        area_id: null,
+      }))
+    : [{ name: 'MAP Administrator', email: 'admin@map.local', password: 'Admin@123', role: 'ADMIN', area_id: null }];
 
-  for (const u of demoUsers) {
+  for (const u of adminUsers) {
     const password_hash = await bcrypt.hash(u.password, 10);
     await prisma.user.upsert({
       where: { email: u.email },
@@ -61,7 +68,7 @@ async function main() {
     }
   }
 
-  console.log(`Seed complete: 2 areas, 3 demo users, 4 chart configs, ${optionCount} dropdown options.`);
+  console.log(`Seed complete: 2 areas, ${adminUsers.length} admin user(s), 4 chart configs, ${optionCount} dropdown options.`);
 }
 
 main()

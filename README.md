@@ -144,7 +144,9 @@ shell — so `npx prisma migrate deploy` can't be run by hand. Instead:
    (`mysql://user:pass@localhost:3306/dbname` — same-account MySQL is reached via `localhost`, which
    sidesteps any external Remote MySQL firewall restriction), `JWT_SECRET`, `CLIENT_ORIGIN`,
    `SEED_DEMO_USERS=false`, and — **for the first boot only** — `RUN_MIGRATIONS_ON_BOOT=true` and
-   `RUN_SEED_ON_BOOT=true`.
+   `RUN_SEED_ON_BOOT=true`. For a real (non-demo) launch, also set `SEED_ADMIN_EMAILS`,
+   `SEED_ADMIN_NAMES`, `SEED_ADMIN_PASSWORDS` — see "Seeding real admin accounts" below — so the
+   first boot creates your actual admins instead of `admin@map.local`.
 4. Click **Run NPM Install** in the UI (this also runs `prisma generate` via the `postinstall` script).
 5. Click **Restart**. On this boot, the app applies any pending Prisma migrations and runs
    `prisma/seed.js` (see `src/index.js`) before it starts listening — both are safe to run more than
@@ -170,6 +172,43 @@ With `SEED_DEMO_USERS=true`:
 | Surveyor | surveyor@map.local | Surveyor@123 |
 
 Change these immediately in any non-local deployment, then set `SEED_DEMO_USERS=false`.
+
+## Seeding real admin accounts
+
+`prisma/seed.js` creates one demo admin (`admin@map.local`) by default — fine for local dev, not for
+a real launch. Set these three env vars (comma-separated, same order) before a `RUN_SEED_ON_BOOT=true`
+restart (or a manual `npx prisma db seed`) to seed your actual admins instead:
+
+```env
+SEED_ADMIN_EMAILS=owner@example.com,colleague@example.com
+SEED_ADMIN_NAMES=Owner Name,Colleague Name
+SEED_ADMIN_PASSWORDS=<strong unique password>,<strong unique password>
+```
+
+Each is created with role `ADMIN`. The seed still upserts by email (safe to run again), so if the
+database already has rows with these addresses their password/name/role get left alone, not reset —
+wipe the relevant tables first (see below) if you want a truly clean slate.
+
+### Wiping the database before a fresh seed (no Terminal/SSH — via phpMyAdmin)
+
+Only do this if there is no real data in the database yet; it is irreversible. In cPanel's
+**phpMyAdmin**, open the database, go to the **SQL** tab, and run:
+
+```sql
+SET FOREIGN_KEY_CHECKS=0;
+TRUNCATE TABLE dependants;
+TRUNCATE TABLE surveys;
+TRUNCATE TABLE users;
+TRUNCATE TABLE areas;
+TRUNCATE TABLE chart_configs;
+TRUNCATE TABLE dropdown_options;
+SET FOREIGN_KEY_CHECKS=1;
+```
+
+Then set `SEED_ADMIN_EMAILS`/`SEED_ADMIN_NAMES`/`SEED_ADMIN_PASSWORDS` (and `RUN_SEED_ON_BOOT=true`)
+in **Setup Node.js App**'s environment variables and restart — this repopulates areas, your admin
+accounts, chart configs, and dropdown options into the now-empty tables. Turn `RUN_SEED_ON_BOOT` back
+off afterward.
 
 ## Security notes for contributors
 - All DB access goes through Prisma Client — never add a raw SQL string or a second ORM.
