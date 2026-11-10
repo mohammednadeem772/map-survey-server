@@ -184,9 +184,10 @@ model Survey {
   internet_access   String? @db.VarChar(30)
 
   // Household economy / vulnerability
-  monthly_household_income  Decimal @default(0) @db.Decimal(12, 2)
-  monthly_household_expense Decimal @default(0) @db.Decimal(12, 2)
-  food_security             String? @db.VarChar(40)
+  monthly_household_income  Decimal  @default(0) @db.Decimal(12, 2)
+  monthly_household_expense Decimal  @default(0) @db.Decimal(12, 2)
+  food_security             String?  @db.VarChar(40)
+  zakat_eligible            Boolean? @default(false)
   vulnerable_category       Json?
 
   notes       String?  @db.Text
@@ -218,6 +219,7 @@ model Dependant {
   age                       Int?
   relationship              String?    @db.VarChar(40)
   gender                    String?    @db.VarChar(30)
+  marital_status            String?    @db.VarChar(30)
   member_type               MemberType
   education                 String?    @db.VarChar(100)
   institution               String?    @db.VarChar(150)

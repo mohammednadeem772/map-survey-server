@@ -17,7 +17,7 @@ export const WRITABLE_FIELDS = [
   'ration_card', 'aadhaar_status', 'health_card', 'bank_account', 'voter_id_status',
   'vehicles', 'fridge', 'television', 'tv_connection', 'tv_type', 'washing_machine',
   'smartphone_access', 'internet_access',
-  'monthly_household_income', 'monthly_household_expense', 'food_security', 'vulnerable_category',
+  'monthly_household_income', 'monthly_household_expense', 'food_security', 'zakat_eligible', 'vulnerable_category',
   'notes',
 ];
 
@@ -42,6 +42,7 @@ export function toDependantCreate(d) {
     age: d.age || null,
     relationship: d.relationship || null,
     gender: d.gender || null,
+    marital_status: d.marital_status || null,
     member_type: d.member_type || 'DEPENDANT',
     education: d.education || null,
     institution: d.institution || null,

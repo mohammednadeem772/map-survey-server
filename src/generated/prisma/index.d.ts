@@ -4391,6 +4391,7 @@ export namespace Prisma {
     monthly_household_income: Decimal | null
     monthly_household_expense: Decimal | null
     food_security: string | null
+    zakat_eligible: boolean | null
     notes: string | null
     surveyed_at: Date | null
     created_at: Date | null
@@ -4453,6 +4454,7 @@ export namespace Prisma {
     monthly_household_income: Decimal | null
     monthly_household_expense: Decimal | null
     food_security: string | null
+    zakat_eligible: boolean | null
     notes: string | null
     surveyed_at: Date | null
     created_at: Date | null
@@ -4517,6 +4519,7 @@ export namespace Prisma {
     monthly_household_income: number
     monthly_household_expense: number
     food_security: number
+    zakat_eligible: number
     vulnerable_category: number
     notes: number
     surveyed_at: number
@@ -4618,6 +4621,7 @@ export namespace Prisma {
     monthly_household_income?: true
     monthly_household_expense?: true
     food_security?: true
+    zakat_eligible?: true
     notes?: true
     surveyed_at?: true
     created_at?: true
@@ -4680,6 +4684,7 @@ export namespace Prisma {
     monthly_household_income?: true
     monthly_household_expense?: true
     food_security?: true
+    zakat_eligible?: true
     notes?: true
     surveyed_at?: true
     created_at?: true
@@ -4744,6 +4749,7 @@ export namespace Prisma {
     monthly_household_income?: true
     monthly_household_expense?: true
     food_security?: true
+    zakat_eligible?: true
     vulnerable_category?: true
     notes?: true
     surveyed_at?: true
@@ -4896,6 +4902,7 @@ export namespace Prisma {
     monthly_household_income: Decimal
     monthly_household_expense: Decimal
     food_security: string | null
+    zakat_eligible: boolean | null
     vulnerable_category: JsonValue | null
     notes: string | null
     surveyed_at: Date
@@ -4980,6 +4987,7 @@ export namespace Prisma {
     monthly_household_income?: boolean
     monthly_household_expense?: boolean
     food_security?: boolean
+    zakat_eligible?: boolean
     vulnerable_category?: boolean
     notes?: boolean
     surveyed_at?: boolean
@@ -5050,6 +5058,7 @@ export namespace Prisma {
     monthly_household_income?: boolean
     monthly_household_expense?: boolean
     food_security?: boolean
+    zakat_eligible?: boolean
     vulnerable_category?: boolean
     notes?: boolean
     surveyed_at?: boolean
@@ -5129,6 +5138,7 @@ export namespace Prisma {
       monthly_household_income: Prisma.Decimal
       monthly_household_expense: Prisma.Decimal
       food_security: string | null
+      zakat_eligible: boolean | null
       vulnerable_category: Prisma.JsonValue | null
       notes: string | null
       surveyed_at: Date
@@ -5563,6 +5573,7 @@ export namespace Prisma {
     readonly monthly_household_income: FieldRef<"Survey", 'Decimal'>
     readonly monthly_household_expense: FieldRef<"Survey", 'Decimal'>
     readonly food_security: FieldRef<"Survey", 'String'>
+    readonly zakat_eligible: FieldRef<"Survey", 'Boolean'>
     readonly vulnerable_category: FieldRef<"Survey", 'Json'>
     readonly notes: FieldRef<"Survey", 'String'>
     readonly surveyed_at: FieldRef<"Survey", 'DateTime'>
@@ -5934,6 +5945,7 @@ export namespace Prisma {
     age: number | null
     relationship: string | null
     gender: string | null
+    marital_status: string | null
     member_type: $Enums.MemberType | null
     education: string | null
     institution: string | null
@@ -5954,6 +5966,7 @@ export namespace Prisma {
     age: number | null
     relationship: string | null
     gender: string | null
+    marital_status: string | null
     member_type: $Enums.MemberType | null
     education: string | null
     institution: string | null
@@ -5974,6 +5987,7 @@ export namespace Prisma {
     age: number
     relationship: number
     gender: number
+    marital_status: number
     member_type: number
     education: number
     institution: number
@@ -6010,6 +6024,7 @@ export namespace Prisma {
     age?: true
     relationship?: true
     gender?: true
+    marital_status?: true
     member_type?: true
     education?: true
     institution?: true
@@ -6030,6 +6045,7 @@ export namespace Prisma {
     age?: true
     relationship?: true
     gender?: true
+    marital_status?: true
     member_type?: true
     education?: true
     institution?: true
@@ -6050,6 +6066,7 @@ export namespace Prisma {
     age?: true
     relationship?: true
     gender?: true
+    marital_status?: true
     member_type?: true
     education?: true
     institution?: true
@@ -6157,6 +6174,7 @@ export namespace Prisma {
     age: number | null
     relationship: string | null
     gender: string | null
+    marital_status: string | null
     member_type: $Enums.MemberType
     education: string | null
     institution: string | null
@@ -6196,6 +6214,7 @@ export namespace Prisma {
     age?: boolean
     relationship?: boolean
     gender?: boolean
+    marital_status?: boolean
     member_type?: boolean
     education?: boolean
     institution?: boolean
@@ -6218,6 +6237,7 @@ export namespace Prisma {
     age?: boolean
     relationship?: boolean
     gender?: boolean
+    marital_status?: boolean
     member_type?: boolean
     education?: boolean
     institution?: boolean
@@ -6247,6 +6267,7 @@ export namespace Prisma {
       age: number | null
       relationship: string | null
       gender: string | null
+      marital_status: string | null
       member_type: $Enums.MemberType
       education: string | null
       institution: string | null
@@ -6634,6 +6655,7 @@ export namespace Prisma {
     readonly age: FieldRef<"Dependant", 'Int'>
     readonly relationship: FieldRef<"Dependant", 'String'>
     readonly gender: FieldRef<"Dependant", 'String'>
+    readonly marital_status: FieldRef<"Dependant", 'String'>
     readonly member_type: FieldRef<"Dependant", 'MemberType'>
     readonly education: FieldRef<"Dependant", 'String'>
     readonly institution: FieldRef<"Dependant", 'String'>
@@ -7962,6 +7984,7 @@ export namespace Prisma {
     monthly_household_income: 'monthly_household_income',
     monthly_household_expense: 'monthly_household_expense',
     food_security: 'food_security',
+    zakat_eligible: 'zakat_eligible',
     vulnerable_category: 'vulnerable_category',
     notes: 'notes',
     surveyed_at: 'surveyed_at',
@@ -7979,6 +8002,7 @@ export namespace Prisma {
     age: 'age',
     relationship: 'relationship',
     gender: 'gender',
+    marital_status: 'marital_status',
     member_type: 'member_type',
     education: 'education',
     institution: 'institution',
@@ -8397,6 +8421,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     food_security?: StringNullableFilter<"Survey"> | string | null
+    zakat_eligible?: BoolNullableFilter<"Survey"> | boolean | null
     vulnerable_category?: JsonNullableFilter<"Survey">
     notes?: StringNullableFilter<"Survey"> | string | null
     surveyed_at?: DateTimeFilter<"Survey"> | Date | string
@@ -8465,6 +8490,7 @@ export namespace Prisma {
     monthly_household_income?: SortOrder
     monthly_household_expense?: SortOrder
     food_security?: SortOrderInput | SortOrder
+    zakat_eligible?: SortOrderInput | SortOrder
     vulnerable_category?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     surveyed_at?: SortOrder
@@ -8536,6 +8562,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     food_security?: StringNullableFilter<"Survey"> | string | null
+    zakat_eligible?: BoolNullableFilter<"Survey"> | boolean | null
     vulnerable_category?: JsonNullableFilter<"Survey">
     notes?: StringNullableFilter<"Survey"> | string | null
     surveyed_at?: DateTimeFilter<"Survey"> | Date | string
@@ -8604,6 +8631,7 @@ export namespace Prisma {
     monthly_household_income?: SortOrder
     monthly_household_expense?: SortOrder
     food_security?: SortOrderInput | SortOrder
+    zakat_eligible?: SortOrderInput | SortOrder
     vulnerable_category?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     surveyed_at?: SortOrder
@@ -8677,6 +8705,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalWithAggregatesFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalWithAggregatesFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     food_security?: StringNullableWithAggregatesFilter<"Survey"> | string | null
+    zakat_eligible?: BoolNullableWithAggregatesFilter<"Survey"> | boolean | null
     vulnerable_category?: JsonNullableWithAggregatesFilter<"Survey">
     notes?: StringNullableWithAggregatesFilter<"Survey"> | string | null
     surveyed_at?: DateTimeWithAggregatesFilter<"Survey"> | Date | string
@@ -8694,6 +8723,7 @@ export namespace Prisma {
     age?: IntNullableFilter<"Dependant"> | number | null
     relationship?: StringNullableFilter<"Dependant"> | string | null
     gender?: StringNullableFilter<"Dependant"> | string | null
+    marital_status?: StringNullableFilter<"Dependant"> | string | null
     member_type?: EnumMemberTypeFilter<"Dependant"> | $Enums.MemberType
     education?: StringNullableFilter<"Dependant"> | string | null
     institution?: StringNullableFilter<"Dependant"> | string | null
@@ -8715,6 +8745,7 @@ export namespace Prisma {
     age?: SortOrderInput | SortOrder
     relationship?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
+    marital_status?: SortOrderInput | SortOrder
     member_type?: SortOrder
     education?: SortOrderInput | SortOrder
     institution?: SortOrderInput | SortOrder
@@ -8739,6 +8770,7 @@ export namespace Prisma {
     age?: IntNullableFilter<"Dependant"> | number | null
     relationship?: StringNullableFilter<"Dependant"> | string | null
     gender?: StringNullableFilter<"Dependant"> | string | null
+    marital_status?: StringNullableFilter<"Dependant"> | string | null
     member_type?: EnumMemberTypeFilter<"Dependant"> | $Enums.MemberType
     education?: StringNullableFilter<"Dependant"> | string | null
     institution?: StringNullableFilter<"Dependant"> | string | null
@@ -8760,6 +8792,7 @@ export namespace Prisma {
     age?: SortOrderInput | SortOrder
     relationship?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
+    marital_status?: SortOrderInput | SortOrder
     member_type?: SortOrder
     education?: SortOrderInput | SortOrder
     institution?: SortOrderInput | SortOrder
@@ -8788,6 +8821,7 @@ export namespace Prisma {
     age?: IntNullableWithAggregatesFilter<"Dependant"> | number | null
     relationship?: StringNullableWithAggregatesFilter<"Dependant"> | string | null
     gender?: StringNullableWithAggregatesFilter<"Dependant"> | string | null
+    marital_status?: StringNullableWithAggregatesFilter<"Dependant"> | string | null
     member_type?: EnumMemberTypeWithAggregatesFilter<"Dependant"> | $Enums.MemberType
     education?: StringNullableWithAggregatesFilter<"Dependant"> | string | null
     institution?: StringNullableWithAggregatesFilter<"Dependant"> | string | null
@@ -9139,6 +9173,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -9207,6 +9242,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -9270,6 +9306,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9338,6 +9375,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9404,6 +9442,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -9466,6 +9505,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9531,6 +9571,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9543,6 +9584,7 @@ export namespace Prisma {
     age?: number | null
     relationship?: string | null
     gender?: string | null
+    marital_status?: string | null
     member_type: $Enums.MemberType
     education?: string | null
     institution?: string | null
@@ -9564,6 +9606,7 @@ export namespace Prisma {
     age?: number | null
     relationship?: string | null
     gender?: string | null
+    marital_status?: string | null
     member_type: $Enums.MemberType
     education?: string | null
     institution?: string | null
@@ -9582,6 +9625,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9603,6 +9647,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9623,6 +9668,7 @@ export namespace Prisma {
     age?: number | null
     relationship?: string | null
     gender?: string | null
+    marital_status?: string | null
     member_type: $Enums.MemberType
     education?: string | null
     institution?: string | null
@@ -9641,6 +9687,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -9661,6 +9708,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10104,6 +10152,11 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type AreaRelationFilter = {
     is?: AreaWhereInput
     isNot?: AreaWhereInput
@@ -10182,6 +10235,7 @@ export namespace Prisma {
     monthly_household_income?: SortOrder
     monthly_household_expense?: SortOrder
     food_security?: SortOrder
+    zakat_eligible?: SortOrder
     vulnerable_category?: SortOrder
     notes?: SortOrder
     surveyed_at?: SortOrder
@@ -10263,6 +10317,7 @@ export namespace Prisma {
     monthly_household_income?: SortOrder
     monthly_household_expense?: SortOrder
     food_security?: SortOrder
+    zakat_eligible?: SortOrder
     notes?: SortOrder
     surveyed_at?: SortOrder
     created_at?: SortOrder
@@ -10325,6 +10380,7 @@ export namespace Prisma {
     monthly_household_income?: SortOrder
     monthly_household_expense?: SortOrder
     food_security?: SortOrder
+    zakat_eligible?: SortOrder
     notes?: SortOrder
     surveyed_at?: SortOrder
     created_at?: SortOrder
@@ -10433,6 +10489,14 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
   export type EnumMemberTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.MemberType | EnumMemberTypeFieldRefInput<$PrismaModel>
     in?: $Enums.MemberType[]
@@ -10452,6 +10516,7 @@ export namespace Prisma {
     age?: SortOrder
     relationship?: SortOrder
     gender?: SortOrder
+    marital_status?: SortOrder
     member_type?: SortOrder
     education?: SortOrder
     institution?: SortOrder
@@ -10479,6 +10544,7 @@ export namespace Prisma {
     age?: SortOrder
     relationship?: SortOrder
     gender?: SortOrder
+    marital_status?: SortOrder
     member_type?: SortOrder
     education?: SortOrder
     institution?: SortOrder
@@ -10499,6 +10565,7 @@ export namespace Prisma {
     age?: SortOrder
     relationship?: SortOrder
     gender?: SortOrder
+    marital_status?: SortOrder
     member_type?: SortOrder
     education?: SortOrder
     institution?: SortOrder
@@ -10810,6 +10877,10 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
   export type AreaUpdateOneRequiredWithoutSurveysNestedInput = {
     create?: XOR<AreaCreateWithoutSurveysInput, AreaUncheckedCreateWithoutSurveysInput>
     connectOrCreate?: AreaCreateOrConnectWithoutSurveysInput
@@ -11081,6 +11152,11 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type NestedEnumSurveyStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.SurveyStatus | EnumSurveyStatusFieldRefInput<$PrismaModel>
     in?: $Enums.SurveyStatus[]
@@ -11160,6 +11236,14 @@ export namespace Prisma {
     gt?: InputJsonValue
     gte?: InputJsonValue
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumMemberTypeFilter<$PrismaModel = never> = {
@@ -11284,6 +11368,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -11350,6 +11435,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -11476,6 +11562,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFilter<"Survey"> | Decimal | DecimalJsLike | number | string
     food_security?: StringNullableFilter<"Survey"> | string | null
+    zakat_eligible?: BoolNullableFilter<"Survey"> | boolean | null
     vulnerable_category?: JsonNullableFilter<"Survey">
     notes?: StringNullableFilter<"Survey"> | string | null
     surveyed_at?: DateTimeFilter<"Survey"> | Date | string
@@ -11564,6 +11651,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -11630,6 +11718,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -11755,6 +11844,7 @@ export namespace Prisma {
     age?: number | null
     relationship?: string | null
     gender?: string | null
+    marital_status?: string | null
     member_type: $Enums.MemberType
     education?: string | null
     institution?: string | null
@@ -11774,6 +11864,7 @@ export namespace Prisma {
     age?: number | null
     relationship?: string | null
     gender?: string | null
+    marital_status?: string | null
     member_type: $Enums.MemberType
     education?: string | null
     institution?: string | null
@@ -11889,6 +11980,7 @@ export namespace Prisma {
     age?: IntNullableFilter<"Dependant"> | number | null
     relationship?: StringNullableFilter<"Dependant"> | string | null
     gender?: StringNullableFilter<"Dependant"> | string | null
+    marital_status?: StringNullableFilter<"Dependant"> | string | null
     member_type?: EnumMemberTypeFilter<"Dependant"> | $Enums.MemberType
     education?: StringNullableFilter<"Dependant"> | string | null
     institution?: StringNullableFilter<"Dependant"> | string | null
@@ -11957,6 +12049,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -12024,6 +12117,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -12102,6 +12196,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12169,6 +12264,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12244,6 +12340,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -12340,6 +12437,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12406,6 +12504,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12471,6 +12570,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12535,6 +12635,7 @@ export namespace Prisma {
     monthly_household_income?: Decimal | DecimalJsLike | number | string
     monthly_household_expense?: Decimal | DecimalJsLike | number | string
     food_security?: string | null
+    zakat_eligible?: boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: string | null
     surveyed_at?: Date | string
@@ -12597,6 +12698,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12663,6 +12765,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12728,6 +12831,7 @@ export namespace Prisma {
     monthly_household_income?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     monthly_household_expense?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     food_security?: NullableStringFieldUpdateOperationsInput | string | null
+    zakat_eligible?: NullableBoolFieldUpdateOperationsInput | boolean | null
     vulnerable_category?: NullableJsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     surveyed_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12741,6 +12845,7 @@ export namespace Prisma {
     age?: number | null
     relationship?: string | null
     gender?: string | null
+    marital_status?: string | null
     member_type: $Enums.MemberType
     education?: string | null
     institution?: string | null
@@ -12759,6 +12864,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12778,6 +12884,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12797,6 +12904,7 @@ export namespace Prisma {
     age?: NullableIntFieldUpdateOperationsInput | number | null
     relationship?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
+    marital_status?: NullableStringFieldUpdateOperationsInput | string | null
     member_type?: EnumMemberTypeFieldUpdateOperationsInput | $Enums.MemberType
     education?: NullableStringFieldUpdateOperationsInput | string | null
     institution?: NullableStringFieldUpdateOperationsInput | string | null

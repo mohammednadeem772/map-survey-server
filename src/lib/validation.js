@@ -35,6 +35,7 @@ const dependantSchema = z.object({
   age,
   relationship: optionalText(40),
   gender: optionalText(30),
+  marital_status: optionalText(30),
   member_type: z.enum(['STUDENT', 'WORKING', 'DEPENDANT']).optional(),
   education: optionalText(100),
   institution: optionalText(150),
@@ -114,6 +115,7 @@ export const surveyBaseSchema = z.object({
   monthly_household_income: amount(),
   monthly_household_expense: amount(),
   food_security: optionalText(40),
+  zakat_eligible: z.boolean().optional(),
   vulnerable_category: z.array(z.string()).optional(),
 
   notes: optionalText(5000),

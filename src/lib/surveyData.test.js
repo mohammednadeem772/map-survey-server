@@ -39,6 +39,7 @@ describe('toDependantCreate', () => {
       age: null,
       relationship: null,
       gender: null,
+      marital_status: null,
       member_type: 'DEPENDANT',
       education: null,
       institution: null,
